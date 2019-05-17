@@ -1,0 +1,23 @@
+{
+    "name": "rorymckinley/spoor_for_whmcs",
+    "description": "A WHMCS module to allow interaction and reporting with the Spoor API.",
+    "type": "WHMCS module",
+    "autoload": {
+      "psr-4": {"WHMCS\\Module\\Addon\\Spoor\\": "modules/addons/spoor/lib/"}
+    },
+    "require": {
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.1",
+        "php-vcr/php-vcr": "^1.4",
+        "php-vcr/phpunit-testlistener-vcr": "^3.2",
+        "smarty/smarty": "^3.1"
+    },
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "Rory McKinley",
+            "email": "rorymckinley@capefox.co"
+        }
+    ]
+}

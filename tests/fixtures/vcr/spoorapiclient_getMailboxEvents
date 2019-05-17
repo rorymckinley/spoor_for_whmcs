@@ -1,0 +1,32 @@
+
+-
+    request:
+        method: GET
+        url: 'https://spoor.capefox.co/api/mailbox_events'
+        headers:
+            Host: spoor.capefox.co
+            Accept: application/json
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: Cowboy
+            Date: 'Wed, 15 May 2019 08:25:55 GMT'
+            Connection: keep-alive
+            X-Frame-Options: SAMEORIGIN
+            X-Xss-Protection: '1; mode=block'
+            X-Content-Type-Options: nosniff
+            X-Download-Options: noopen
+            X-Permitted-Cross-Domain-Policies: none
+            Referrer-Policy: strict-origin-when-cross-origin
+            Content-Type: 'application/json; charset=utf-8'
+            Etag: 'W/"26d2b80923910c5b2e6065dff6e218c3"'
+            Cache-Control: 'max-age=0, private, must-revalidate'
+            X-Request-Id: f4edaa04-b29d-4918-8e65-98a68decfdad
+            X-Runtime: '0.178642'
+            Strict-Transport-Security: 'max-age=31536000; includeSubDomains'
+            Transfer-Encoding: chunked
+            Via: '1.1 vegur'
+        body: '{"mailbox_events":[{"id":"123ABC","host":"host1.test.com","mailbox_address":"unwitting@victim.zzz","ip_actor":{"id":"789GHI","ip_address":"10.0.0.1","city":"Cape Town","country_code":"ZA","owner":{"isp":"Awesome SP (Pty) Ltd","organisation":"awesome-isp"}},"event_time":1557205608,"type":"login"},{"id":"456DEF","host":"host2.test.com","mailbox_address":"hapless@anothervictim.zzz","ip_actor":{"id":"012JKL","ip_address":"10.0.0.2","city":"Cape Town","country_code":"ZA","owner":{"isp":"Not So Awesome ISP (Pty) Ltd","organisation":"not-so-awesome"}},"event_time":1557153060,"type":"login"},{"id":"567MNO","host":"host3.test.com","mailbox_address":"introuble@yetanothervictim.zzz","ip_actor":{"id":"678PQR","ip_address":"10.0.0.3","city":"Cape Town","country_code":"ZA","owner":{"isp":"Meh ISP (Pty) Ltd","organisation":"meh-isp"}},"event_time":1556002283,"type":"forward_removed"}]}'
