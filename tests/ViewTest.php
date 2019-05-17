@@ -39,7 +39,8 @@ class ViewTest extends TestCase {
           )
         ),
         'event_time' => 1557205620,
-        'type' => 'forward_added'
+        'type' => 'forward_added',
+        'forward_recipient' => 'badguy99@gmail.com'
       ),
     );
     $view = new View(new Smarty());
