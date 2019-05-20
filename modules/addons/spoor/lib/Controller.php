@@ -11,7 +11,17 @@ class Controller {
   }
 
   public function route($action, $params) {
-    $events = $this->api_client->getMailboxEvents();
-    return $this->view->htmlForMailboxEvents($events);
+    switch($action) {
+    case 'list_potential_incidents':
+      $events = $this->api_client->getPotentialIncidents();
+      $html = $this->view->htmlForPotentialIncidents($events);
+      break;
+    default:
+      $events = $this->api_client->getMailboxEvents();
+      $html = $this->view->htmlForMailboxEvents($events);
+      break;
+    }
+    
+    return $html;
   }
 }
