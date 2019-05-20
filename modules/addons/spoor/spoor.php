@@ -66,5 +66,9 @@ function spoor_output($vars) {
 }
 
 function spoor_sidebar($vars) {
-  echo "";
+  $smarty = new Smarty();
+  $smarty->compile_dir = $GLOBALS['templates_compiledir'];
+
+  $view = new View($smarty);
+  echo $view->htmlForSidebar($vars['modulelink']);
 }

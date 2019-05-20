@@ -43,4 +43,42 @@ class ControllerTest extends TestCase {
     $this->assertStringContainsString('unwitting@victim.zzz', $output);
     $this->assertStringContainsString(date('c', 1557205608), $output);
   }
+
+  public function testListPotentialIncidentsRoute() {
+    $events = array(
+      array(
+        'id' => '123ABC',
+        'host' => 'host1.test.com',
+        'mailbox_address' => 'unwitting@victim.zzz',
+        'ip_actor' => array(
+          'id' => '789GHI',
+          'ip_address' => '10.0.0.1',
+          'city' => 'Cape Town',
+          'country_code' => 'ZA',
+          'owner' => array(
+            'isp' => 'Awesome SP (Pty) Ltd',
+            'organisation' => 'awesome'
+          )
+        ),
+        'event_time' => 1557205608,
+        'type' => 'login'
+      ),
+    );
+    $api_client = $this->createMock(SpoorApiClient::class);
+    $api_client->method('getPotentialIncidents')
+               ->willReturn($events);
+
+    $view = new View(new Smarty());
+
+    $whmcs_config = array();
+    $params = array();
+    $action = 'list_potential_incidents';
+
+    $controller = new Controller($whmcs_config, $api_client, $view);
+    $output = $controller->route($action, $params);
+
+    $this->assertStringContainsString('Potential Incidents', $output);
+    $this->assertStringContainsString('unwitting@victim.zzz', $output);
+    $this->assertStringContainsString(date('c', 1557205608), $output);
+  }
 }
