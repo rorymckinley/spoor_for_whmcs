@@ -42,14 +42,14 @@ class SpoorApiClientTest extends TestCase {
     );
   }
 
-  public function testGetPotentialIncidents() {
+  public function testGetProbablyMaliciousMailboxEvents() {
     $api_url = 'https://spoor.capefox.co';
     $api_identifier = '123ABC';
     $api_secret = 'secretf00';
     VCR::turnOn();
-    VCR::insertCassette('spoorapiclient_getPotentialIncidents');
+    VCR::insertCassette('spoorapiclient_getProbablyMaliciousMailboxEvents');
     $api_client = new SpoorApiClient($api_url, $api_identifier, $api_secret);
-    $events = $api_client->getPotentialIncidents();
+    $events = $api_client->getProbablyMaliciousMailboxEvents();
     VCR::eject();
     VCR::turnOff();
     $this->assertCount(3, $events);

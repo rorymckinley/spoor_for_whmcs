@@ -29,8 +29,8 @@ class SpoorApiClient {
     return $mailbox_events;
   }
 
-  public function getPotentialIncidents() {
-    $params = http_build_query(array('mailbox_events' => array('diagnosis' => 'potential_incident')));
+  public function getProbablyMaliciousMailboxEvents() {
+    $params = http_build_query(array('mailbox_events' => array('class' => 'probably_malicious')));
     $ch = curl_init($this->api_url.'/api/mailbox_events?'.$params);
 
     curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);

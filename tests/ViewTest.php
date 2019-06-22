@@ -48,7 +48,7 @@ class ViewTest extends TestCase {
     $this->assertEquals($output, $view->htmlForMailboxEvents($events));
   }
 
-  public function testHtmlForPotentialIncidents() {
+  public function testHtmlForDashboard() {
     $events = array(
       array(
         'id' => '123ABC',
@@ -87,7 +87,7 @@ class ViewTest extends TestCase {
       ),
     );
     $view = new View(new Smarty());
-    $output = file_get_contents(__DIR__.'/fixtures/templates/get_potential_incidents.html');
-    $this->assertEquals($output, $view->htmlForPotentialIncidents($events));
+    $output = file_get_contents(__DIR__.'/fixtures/templates/dashboard.html');
+    $this->assertEquals($output, $view->htmlForDashboard($events));
   }
 }

@@ -12,13 +12,13 @@ class Controller {
 
   public function route($action, $params) {
     switch($action) {
-    case 'list_potential_incidents':
-      $events = $this->api_client->getPotentialIncidents();
-      $html = $this->view->htmlForPotentialIncidents($events);
-      break;
-    default:
+    case 'list_mailbox_events':
       $events = $this->api_client->getMailboxEvents();
       $html = $this->view->htmlForMailboxEvents($events);
+      break;
+    default:
+      $events = $this->api_client->getProbablyMaliciousMailboxEvents();
+      $html = $this->view->htmlForDashboard($events);
       break;
     }
     
