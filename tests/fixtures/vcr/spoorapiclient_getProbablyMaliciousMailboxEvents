@@ -2,7 +2,7 @@
 -
     request:
         method: GET
-        url: 'https://spoor.capefox.co/api/mailbox_events?mailbox_events%5Bdiagnosis%5D=potential_incident'
+        url: 'https://spoor.capefox.co/api/mailbox_events?mailbox_events%5Bclass%5D=probably_malicious'
         headers:
             Host: spoor.capefox.co
             Accept: application/json

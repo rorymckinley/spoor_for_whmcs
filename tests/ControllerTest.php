@@ -27,7 +27,7 @@ class ControllerTest extends TestCase {
       ),
     );
     $api_client = $this->createMock(SpoorApiClient::class);
-    $api_client->method('getMailboxEvents')
+    $api_client->method('getProbablyMaliciousMailboxEvents')
                ->willReturn($events);
 
     $view = new View(new Smarty());
@@ -39,12 +39,12 @@ class ControllerTest extends TestCase {
     $controller = new Controller($whmcs_config, $api_client, $view);
     $output = $controller->route($action, $params);
 
-    $this->assertStringContainsString('Recent Mailbox Events', $output);
+    $this->assertStringContainsString('Probably Malicious Events', $output);
     $this->assertStringContainsString('unwitting@victim.zzz', $output);
     $this->assertStringContainsString(date('c', 1557205608), $output);
   }
 
-  public function testListPotentialIncidentsRoute() {
+  public function testListMailboxEvents() {
     $events = array(
       array(
         'id' => '123ABC',
@@ -65,19 +65,19 @@ class ControllerTest extends TestCase {
       ),
     );
     $api_client = $this->createMock(SpoorApiClient::class);
-    $api_client->method('getPotentialIncidents')
+    $api_client->method('getMailboxEvents')
                ->willReturn($events);
 
     $view = new View(new Smarty());
 
     $whmcs_config = array();
     $params = array();
-    $action = 'list_potential_incidents';
+    $action = 'list_mailbox_events';
 
     $controller = new Controller($whmcs_config, $api_client, $view);
     $output = $controller->route($action, $params);
 
-    $this->assertStringContainsString('Potential Incidents', $output);
+    $this->assertStringContainsString('Recent Mailbox Events', $output);
     $this->assertStringContainsString('unwitting@victim.zzz', $output);
     $this->assertStringContainsString(date('c', 1557205608), $output);
   }
