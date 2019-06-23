@@ -2,10 +2,25 @@
 use PHPUnit\Framework\TestCase;
 
 use WHMCS\Module\Addon\Spoor\Controller;
+use WHMCS\Module\Addon\Spoor\SessionManager;
 use WHMCS\Module\Addon\Spoor\SpoorApiClient;
 use WHMCS\Module\Addon\Spoor\View;
 
 class ControllerTest extends TestCase {
+  protected function setUp(): void {
+    $this->api_client = $this->createMock(SpoorApiClient::class);
+    $this->view = new View(new Smarty());
+    $this->session = array('spoor_session_authenticity_token' => '123ABC');
+    $this->session_manager = new SessionManager($this->session);
+    $this->whmcs_config = array();
+    $this->controller = new Controller([
+      'config' => $this->whmcs_config, 
+      'api_client' => $this->api_client,
+      'view' => $this->view,
+      'session_manager' => $this->session_manager
+    ]);
+  }
+
   public function testDefaultRoute() {
     $events = array(
       array(
@@ -26,22 +41,40 @@ class ControllerTest extends TestCase {
         'type' => 'login'
       ),
     );
-    $api_client = $this->createMock(SpoorApiClient::class);
-    $api_client->method('getProbablyMaliciousMailboxEvents')
+    $this->api_client->method('getProbablyMaliciousMailboxEvents')
                ->willReturn($events);
 
-    $view = new View(new Smarty());
-
-    $whmcs_config = array();
     $params = array();
     $action = null;
 
-    $controller = new Controller($whmcs_config, $api_client, $view);
-    $output = $controller->route($action, $params);
+    $output = $this->controller->route($action, $params);
 
     $this->assertStringContainsString('Probably Malicious Events', $output);
     $this->assertStringContainsString('unwitting@victim.zzz', $output);
     $this->assertStringContainsString(date('c', 1557205608), $output);
+  }
+
+  public function testDefaultRouteNoDefinedSessionInitialisesSession() {
+    $this->session['spoor_session_authenticity_token'] = null;
+    $events = array();
+    $this->api_client->method('getProbablyMaliciousMailboxEvents')->willReturn($events);
+
+    $params = array();
+    $action = null;
+
+    $output = $this->controller->route($action, $params);
+    $this->assertGreaterThanOrEqual(100000000000, $this->session['spoor_session_authenticity_token']);
+  }
+
+  public function testDefaultRouteSessionDefinedDoesNotInitialiseSession() {
+    $events = array();
+    $this->api_client->method('getProbablyMaliciousMailboxEvents')->willReturn($events);
+
+    $params = array();
+    $action = null;
+
+    $output = $this->controller->route($action, $params);
+    $this->assertEquals('123ABC', $this->session['spoor_session_authenticity_token']);
   }
 
   public function testListMailboxEvents() {
@@ -64,21 +97,39 @@ class ControllerTest extends TestCase {
         'type' => 'login'
       ),
     );
-    $api_client = $this->createMock(SpoorApiClient::class);
-    $api_client->method('getMailboxEvents')
+    $this->api_client->method('getMailboxEvents')
                ->willReturn($events);
 
-    $view = new View(new Smarty());
-
-    $whmcs_config = array();
     $params = array();
     $action = 'list_mailbox_events';
 
-    $controller = new Controller($whmcs_config, $api_client, $view);
-    $output = $controller->route($action, $params);
+    $output = $this->controller->route($action, $params);
 
     $this->assertStringContainsString('Recent Mailbox Events', $output);
     $this->assertStringContainsString('unwitting@victim.zzz', $output);
     $this->assertStringContainsString(date('c', 1557205608), $output);
+  }
+
+  public function testListMailboxEventsNoDefinedSessionInitialisesSession() {
+    $this->session['spoor_session_authenticity_token'] = null;
+    $events = array();
+    $this->api_client->method('getMailboxEvents')->willReturn($events);
+
+    $params = array();
+    $action = 'list_mailbox_events';
+
+    $output = $this->controller->route($action, $params);
+    $this->assertGreaterThanOrEqual(100000000000, $this->session['spoor_session_authenticity_token']);
+  }
+
+  public function testListMailboxEventsSessionDefinedDoesNotInitialiseSession() {
+    $events = array();
+    $this->api_client->method('getMailboxEvents')->willReturn($events);
+
+    $params = array();
+    $action = 'list_mailbox_events';
+
+    $output = $this->controller->route($action, $params);
+    $this->assertEquals('123ABC', $this->session['spoor_session_authenticity_token']);
   }
 }
