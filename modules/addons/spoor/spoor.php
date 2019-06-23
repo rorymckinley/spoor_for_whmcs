@@ -3,6 +3,7 @@
 use WHMCS\Database\Capsule;
 
 use WHMCS\Module\Addon\Spoor\Controller;
+use WHMCS\Module\Addon\Spoor\SessionManager;
 use WHMCS\Module\Addon\Spoor\SpoorApiClient;
 use WHMCS\Module\Addon\Spoor\View;
 
@@ -16,7 +17,7 @@ function spoor_config() {
     'description' => 'A module that integrates with the Spoor API',
     'author' => 'Rory McKinley',
     'language' => 'english',
-    'version' => '0.0.1',
+    'version' => '0.0.2',
     'fields' => [
       'spoor_api_identifier' => [
         'Spoor API Identifier' => 'spoor_api_identifier',
@@ -39,6 +40,13 @@ function spoor_config() {
         'Default' => 'https://spoor.capefox.co/',
         'Description' => 'Spoor URL'
       ],
+      'spoor_secret_key' => [
+        'Spoor Secret Key' => 'spoor_secret_key',
+        'Type' => 'text',
+        'Size' => '64',
+        'Default' => hash('sha256', random_int(1, 100000000)),
+        'Description' => 'Used to generate anti-CSRF authenticity tokens'
+      ]
     ]
   ];
 }
@@ -55,13 +63,20 @@ function spoor_upgrade($vars) {
 
 function spoor_output($vars) {
   $api_client = new SpoorApiClient($vars['spoor_api_url'], $vars['spoor_api_identifier'], $vars['spoor_api_secret']);
+  $session_manager = new SessionManager($_SESSION);
 
   $smarty = new Smarty();
   $smarty->compile_dir = $GLOBALS['templates_compiledir'];
 
   $view = new View($smarty);
 
-  $controller = new Controller($vars, $api_client, $view);
+  $controller = new Controller([
+    'config' => $vars,
+    'api_client' => $api_client,
+    'view' => $view,
+    'session_manager' => $session_manager
+  ]);
+
   echo $controller->route($_GET['action'], $_REQUEST);
 }
 
