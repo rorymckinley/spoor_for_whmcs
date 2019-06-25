@@ -7,6 +7,7 @@ class Controller {
   private $view;
 
   function __construct($args) {
+    $this->config = $args['config'];
     $this->api_client = $args['api_client'];
     $this->view = $args['view'];
     $this->session_manager = $args['session_manager'];
@@ -17,16 +18,20 @@ class Controller {
     case 'list_mailbox_events':
       $this->initialiseSession();
       $events = $this->api_client->getMailboxEvents();
-      $html = $this->view->htmlForMailboxEvents($events);
+      $output = $this->view->htmlForMailboxEvents($events);
+      break;
+    case 'fetch_probably_malicious_events':
+      $events = $this->api_client->getProbablyMaliciousMailboxEvents();
+      $output = json_encode(['mailboxEvents' => $events]);
       break;
     default:
       $this->initialiseSession();
       $events = $this->api_client->getProbablyMaliciousMailboxEvents();
-      $html = $this->view->htmlForDashboard($events);
+      $output = $this->view->htmlForDashboard($events, $this->config);
       break;
     }
     
-    return $html;
+    return $output;
   }
 
   private function initialiseSession() {

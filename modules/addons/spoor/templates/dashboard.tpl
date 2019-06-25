@@ -1,4 +1,8 @@
-<div class="panel panel-default">
+<script type='text/javascript'>
+  var moduleLink = '{$modulelink}';
+</script>
+<script src='../modules/addons/spoor/templates/js/dashboard.js' type='text/javascript'></script>
+<div class="panel panel-default" id="event_listing_panel">
   <div class="panel-heading">Probably Malicious Events</div>
 
   <table class="table">
@@ -16,21 +20,5 @@
         Host
       </th>
     </tr>
-{foreach $events as $event}
-    <tr>
-      <td>
-        {date('c', $event['event_time'])}
-      </td>
-      <td>
-        {ucwords(preg_replace('/_/', ' ', $event['type']))}
-      </td>
-      <td>
-        {$event['mailbox_address']}
-      </td>
-      <td>
-        {$event['host']}
-      </td>
-    </tr>
-{/foreach}
   </table>
 </div>

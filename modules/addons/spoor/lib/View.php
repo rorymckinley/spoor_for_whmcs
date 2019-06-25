@@ -8,8 +8,9 @@ class View {
     $this->template_engine = $template_engine;
   }
 
-  public function htmlForDashboard($events) {
+  public function htmlForDashboard($events, $config) {
     $this->template_engine->assign('events', $events);
+    $this->template_engine->assign('modulelink', $config['modulelink']);
     return $this->template_engine->fetch(__DIR__.'/../templates/dashboard.tpl');
   }
 
