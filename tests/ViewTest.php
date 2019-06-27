@@ -86,8 +86,9 @@ class ViewTest extends TestCase {
         'forward_recipient' => 'badguy99@gmail.com'
       ),
     );
+    $config = ['modulelink' => '/addonmodules.php?module=spoor'];
     $view = new View(new Smarty());
     $output = file_get_contents(__DIR__.'/fixtures/templates/dashboard.html');
-    $this->assertEquals($output, $view->htmlForDashboard($events));
+    $this->assertEquals($output, $view->htmlForDashboard($events, $config));
   }
 }

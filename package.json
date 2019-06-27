@@ -1,0 +1,36 @@
+{
+  "name": "spoor_for_whmcs",
+  "version": "0.0.3",
+  "description": "WHMCS Interface for Spoor",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "browserify js/src/dashboard.js -o modules/addons/spoor/templates/js/dashboard.js -t [ babelify --presets [ @babel/preset-env ] --plugins [ @babel/plugin-proposal-class-properties ] ]",
+    "test": "jest --env=jsdom"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rorymckinley/spoor_for_whmcs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rorymckinley/spoor_for_whmcs/issues"
+  },
+  "homepage": "https://github.com/rorymckinley/spoor_for_whmcs#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
+    "eslint": "^6.0.1",
+    "eslint-config-google": "^0.13.0",
+    "jasmine": "^3.4.0",
+    "jest": "^24.8.0",
+    "jquery": "^1.12.4"
+  }
+}

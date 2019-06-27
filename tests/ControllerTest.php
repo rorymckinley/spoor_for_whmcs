@@ -12,7 +12,11 @@ class ControllerTest extends TestCase {
     $this->view = new View(new Smarty());
     $this->session = array('spoor_session_authenticity_token' => '123ABC');
     $this->session_manager = new SessionManager($this->session);
-    $this->whmcs_config = array();
+    $this->whmcs_config = [
+      'modulelink' => 'admin/addonmodules.php?module=spoor'
+    ];
+    $this->params = [
+    ];
     $this->controller = new Controller([
       'config' => $this->whmcs_config, 
       'api_client' => $this->api_client,
@@ -44,14 +48,11 @@ class ControllerTest extends TestCase {
     $this->api_client->method('getProbablyMaliciousMailboxEvents')
                ->willReturn($events);
 
-    $params = array();
     $action = null;
 
-    $output = $this->controller->route($action, $params);
+    $output = $this->controller->route($action, $this->params);
 
     $this->assertStringContainsString('Probably Malicious Events', $output);
-    $this->assertStringContainsString('unwitting@victim.zzz', $output);
-    $this->assertStringContainsString(date('c', 1557205608), $output);
   }
 
   public function testDefaultRouteNoDefinedSessionInitialisesSession() {
@@ -59,10 +60,9 @@ class ControllerTest extends TestCase {
     $events = array();
     $this->api_client->method('getProbablyMaliciousMailboxEvents')->willReturn($events);
 
-    $params = array();
     $action = null;
 
-    $output = $this->controller->route($action, $params);
+    $output = $this->controller->route($action, $this->params);
     $this->assertGreaterThanOrEqual(100000000000, $this->session['spoor_session_authenticity_token']);
   }
 
@@ -70,10 +70,9 @@ class ControllerTest extends TestCase {
     $events = array();
     $this->api_client->method('getProbablyMaliciousMailboxEvents')->willReturn($events);
 
-    $params = array();
     $action = null;
 
-    $output = $this->controller->route($action, $params);
+    $output = $this->controller->route($action, $this->params);
     $this->assertEquals('123ABC', $this->session['spoor_session_authenticity_token']);
   }
 
@@ -100,10 +99,9 @@ class ControllerTest extends TestCase {
     $this->api_client->method('getMailboxEvents')
                ->willReturn($events);
 
-    $params = array();
     $action = 'list_mailbox_events';
 
-    $output = $this->controller->route($action, $params);
+    $output = $this->controller->route($action, $this->params);
 
     $this->assertStringContainsString('Recent Mailbox Events', $output);
     $this->assertStringContainsString('unwitting@victim.zzz', $output);
@@ -115,10 +113,9 @@ class ControllerTest extends TestCase {
     $events = array();
     $this->api_client->method('getMailboxEvents')->willReturn($events);
 
-    $params = array();
     $action = 'list_mailbox_events';
 
-    $output = $this->controller->route($action, $params);
+    $output = $this->controller->route($action, $this->params);
     $this->assertGreaterThanOrEqual(100000000000, $this->session['spoor_session_authenticity_token']);
   }
 
@@ -126,10 +123,38 @@ class ControllerTest extends TestCase {
     $events = array();
     $this->api_client->method('getMailboxEvents')->willReturn($events);
 
-    $params = array();
     $action = 'list_mailbox_events';
 
-    $output = $this->controller->route($action, $params);
+    $output = $this->controller->route($action, $this->params);
     $this->assertEquals('123ABC', $this->session['spoor_session_authenticity_token']);
+  }
+
+  public function testFetchProbablyMaliciousMailboxEvents() {
+    $events = array(
+      array(
+        'id' => '123ABC',
+        'host' => 'host1.test.com',
+        'mailbox_address' => 'unwitting@victim.zzz',
+        'ip_actor' => array(
+          'id' => '789GHI',
+          'ip_address' => '10.0.0.1',
+          'city' => 'Cape Town',
+          'country_code' => 'ZA',
+          'owner' => array(
+            'isp' => 'Awesome SP (Pty) Ltd',
+            'organisation' => 'awesome'
+          )
+        ),
+        'event_time' => 1557205608,
+        'type' => 'login'
+      ),
+    );
+    $this->api_client->method('getProbablyMaliciousMailboxEvents')
+               ->willReturn($events);
+
+    $action = 'fetch_probably_malicious_events';
+
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
   }
 }

@@ -78,6 +78,9 @@ function spoor_output($vars) {
   ]);
 
   echo $controller->route($_GET['action'], $_REQUEST);
+  if ($_REQUEST['ajax'] === 'true') {
+    die(); // Force WHMCS to return json
+  }
 }
 
 function spoor_sidebar($vars) {
@@ -85,5 +88,8 @@ function spoor_sidebar($vars) {
   $smarty->compile_dir = $GLOBALS['templates_compiledir'];
 
   $view = new View($smarty);
-  echo $view->htmlForSidebar($vars['modulelink']);
+
+  if ($_REQUEST['ajax'] !== 'true') {
+    echo $view->htmlForSidebar($vars['modulelink']);
+  }
 }
