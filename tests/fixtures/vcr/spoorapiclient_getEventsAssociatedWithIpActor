@@ -1,0 +1,32 @@
+
+-
+    request:
+        method: GET
+        url: 'https://spoor.capefox.co/api/mailbox_events?mailbox_events%5Bprimary_event_id%5D=789GHI&mailbox_events%5Bassociation%5D=ip_actor'
+        headers:
+            Host: spoor.capefox.co
+            Accept: application/json
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: Cowboy
+            Date: 'Fri, 28 Jun 2019 14:16:04 GMT'
+            Connection: keep-alive
+            X-Frame-Options: SAMEORIGIN
+            X-Xss-Protection: '1; mode=block'
+            X-Content-Type-Options: nosniff
+            X-Download-Options: noopen
+            X-Permitted-Cross-Domain-Policies: none
+            Referrer-Policy: strict-origin-when-cross-origin
+            Content-Type: 'application/json; charset=utf-8'
+            Etag: 'W/"1696e70e5f8ff84697e282d77e733e2c"'
+            Cache-Control: 'max-age=0, private, must-revalidate'
+            X-Request-Id: 87a214d3-f534-4ddf-8940-83c879f8841d
+            X-Runtime: '0.300334'
+            Strict-Transport-Security: 'max-age=31536000; includeSubDomains'
+            Transfer-Encoding: chunked
+            Via: '1.1 vegur'
+        body: '{"mailbox_events":[{"id":"312ZXC","host":"host4.test.com","mailbox_address":"innocent@bystander.zzz","ip_actor":{"id":"009WER","ip_address":"10.0.0.4","city":"Cape Town","country_code":"ZA","owner":{"isp":"Awesome SP (Pty) Ltd","organisation":"awesome-isp"}},"event_time":1557205608,"type":"login"},{"id":"567CTR","host":"host5.test.com","mailbox_address":"helpless@victim.zzz","ip_actor":{"id":"987KNB","ip_address":"10.0.0.5","city":"Cape Town","country_code":"ZA","owner":{"isp":"Not So Awesome ISP (Pty) Ltd","organisation":"not-so-awesome"}},"event_time":1557153060,"type":"login"},{"id":"321BCA","host":"host6.test.com","mailbox_address":"annoyed@yetanothervictim.zzz","ip_actor":{"id":"678PQR","ip_address":"10.0.0.6","city":"Cape Town","country_code":"ZA","owner":{"isp":"Meh ISP (Pty) Ltd","organisation":"meh-isp"}},"event_time":1556002283,"type":"forward_removed"}]}'

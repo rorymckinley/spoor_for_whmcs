@@ -1,0 +1,24 @@
+#event_detail_panel {
+  display: none;
+}
+
+#event_mailbox_associated_events_panel {
+  display: none;
+}
+
+#event_ip_actor_associated_events_panel {
+  display: none;
+}
+
+#event_forward_recipient_associated_events_panel {
+  display: none;
+}
+
+.panel-overlay {
+  background: #c2c8d1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}

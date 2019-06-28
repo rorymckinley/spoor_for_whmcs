@@ -31,6 +31,7 @@
     "eslint-config-google": "^0.13.0",
     "jasmine": "^3.4.0",
     "jest": "^24.8.0",
+    "jest-expect-message": "^1.0.2",
     "jquery": "^1.12.4"
   }
 }

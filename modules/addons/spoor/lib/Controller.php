@@ -24,6 +24,18 @@ class Controller {
       $events = $this->api_client->getProbablyMaliciousMailboxEvents();
       $output = json_encode(['mailboxEvents' => $events]);
       break;
+    case 'fetch_events_for_mailbox':
+      $events = $this->api_client->getEventsAssociatedWithMailboxAddress($params['mailbox_event_id']);
+      $output = json_encode(['mailboxEvents' => $events]);
+      break;
+    case 'fetch_events_for_ip_actor':
+      $events = $this->api_client->getEventsAssociatedWithIpActor($params['mailbox_event_id']);
+      $output = json_encode(['mailboxEvents' => $events]);
+      break;
+    case 'fetch_events_for_forward_recipient':
+      $events = $this->api_client->getEventsAssociatedWithForwardRecipient($params['mailbox_event_id']);
+      $output = json_encode(['mailboxEvents' => $events]);
+      break;
     default:
       $this->initialiseSession();
       $events = $this->api_client->getProbablyMaliciousMailboxEvents();
