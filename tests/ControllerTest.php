@@ -157,4 +157,97 @@ class ControllerTest extends TestCase {
     $output = $this->controller->route($action, $this->params);
     $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
   }
+
+  public function testFetchEventsForMailbox() {
+    $events = array(
+      array(
+        'id' => '123ABC',
+        'host' => 'host1.test.com',
+        'mailbox_address' => 'unwitting@victim.zzz',
+        'ip_actor' => array(
+          'id' => '789GHI',
+          'ip_address' => '10.0.0.1',
+          'city' => 'Cape Town',
+          'country_code' => 'ZA',
+          'owner' => array(
+            'isp' => 'Awesome SP (Pty) Ltd',
+            'organisation' => 'awesome'
+          )
+        ),
+        'event_time' => 1557205608,
+        'type' => 'login'
+      ),
+    );
+    $this->api_client->method('getEventsAssociatedWithMailboxAddress')
+               ->with('123ABC')
+               ->willReturn($events);
+
+    $action = 'fetch_events_for_mailbox';
+    $this->params['mailbox_event_id'] = '123ABC';
+
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
+  }
+
+  public function testFetchEventsForIpActor() {
+    $events = array(
+      array(
+        'id' => '123ABC',
+        'host' => 'host1.test.com',
+        'mailbox_address' => 'unwitting@victim.zzz',
+        'ip_actor' => array(
+          'id' => '789GHI',
+          'ip_address' => '10.0.0.1',
+          'city' => 'Cape Town',
+          'country_code' => 'ZA',
+          'owner' => array(
+            'isp' => 'Awesome SP (Pty) Ltd',
+            'organisation' => 'awesome'
+          )
+        ),
+        'event_time' => 1557205608,
+        'type' => 'login'
+      ),
+    );
+    $this->api_client->method('getEventsAssociatedWithIpActor')
+               ->with('123ABC')
+               ->willReturn($events);
+
+    $action = 'fetch_events_for_ip_actor';
+    $this->params['mailbox_event_id'] = '123ABC';
+
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
+  }
+
+  public function testFetchEventsForForwardRecipient() {
+    $events = array(
+      array(
+        'id' => '123ABC',
+        'host' => 'host1.test.com',
+        'mailbox_address' => 'unwitting@victim.zzz',
+        'ip_actor' => array(
+          'id' => '789GHI',
+          'ip_address' => '10.0.0.1',
+          'city' => 'Cape Town',
+          'country_code' => 'ZA',
+          'owner' => array(
+            'isp' => 'Awesome SP (Pty) Ltd',
+            'organisation' => 'awesome'
+          )
+        ),
+        'event_time' => 1557205608,
+        'type' => 'login'
+      ),
+    );
+    $this->api_client->method('getEventsAssociatedWithForwardRecipient')
+               ->with('123ABC')
+               ->willReturn($events);
+
+    $action = 'fetch_events_for_forward_recipient';
+    $this->params['mailbox_event_id'] = '123ABC';
+
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
+  }
 }

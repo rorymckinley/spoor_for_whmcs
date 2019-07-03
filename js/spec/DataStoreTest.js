@@ -1,6 +1,5 @@
 const DataStore = require('../src/DataStore.js');
-
-const mockFunction = jest.fn();
+const dssh = require('./DataStoreSpecHelper');
 
 const MailboxEvent = class {
   constructor(args) { // eslint-disable-line require-jsdoc
@@ -9,32 +8,23 @@ const MailboxEvent = class {
 };
 
 const connection = {
-  get: mockFunction,
+  get: jest.fn(),
 };
 
+const config = {requestBase: '/foo/admin/addonmodules.php?module=spoor'};
+const dataStore = new DataStore(connection, config);
+
 describe('.fetchProbablyMaliciousMailboxEvents', () => {
-  beforeEach(() => {
-    mockFunction
-      .mockReturnValueOnce({mailboxEvents: [
-        {id: 1}, {id: 2},
-      ]});
-  });
-
   test('it connects to the WHMCS backend to get mailbox events', () =>{
-    const dataStore = new DataStore(connection, {requestBase: '/foo/admin/addonmodules.php?module=spoor'});
-
     dataStore.fetchProbablyMaliciousMailboxEvents(() => null);
 
-    expect(mockFunction.mock.calls.length).toBe(1);
-    const connectionArgs = mockFunction.mock.calls[0][0];
-    expect(connectionArgs.url).toBe(
-      '/foo/admin/addonmodules.php?module=spoor&action=fetch_probably_malicious_events&ajax=true'
-    );
+    expect(connection.get.mock.calls.length).toBe(1);
+    const connectionArgs = connection.get.mock.calls[0][0];
+    dssh.validateUrl(config.requestBase, [['action', 'fetch_probably_malicious_events']], connectionArgs.url);
     expect(connectionArgs.dataType).toBe('json');
   });
 
   test('it can fetch a list of mailbox events that are probably malicious', () => {
-    const dataStore = new DataStore(connection, {request_base: '/foo/admin/addonmodules.php?module=spoor'});
     const events = [];
 
     dataStore.fetchProbablyMaliciousMailboxEvents((argSets) => {
@@ -44,7 +34,7 @@ describe('.fetchProbablyMaliciousMailboxEvents', () => {
     });
 
     // Trigger the callback when data is received
-    mockFunction.mock.calls[0][0].success({
+    connection.get.mock.calls[0][0].success({
       mailboxEvents: [{id: 1}, {id: 2}],
     });
     expect(events.length).toBe(2);
@@ -53,3 +43,92 @@ describe('.fetchProbablyMaliciousMailboxEvents', () => {
   });
 });
 
+describe('#fetchEventsForMailbox', () => {
+  test('it connects to the WHMCS backend to get events associated with the mailbox', () => {
+    dataStore.fetchEventsForMailbox('123ABC', () => null);
+
+    expect(connection.get.mock.calls.length).toBe(1);
+    const connectionArgs = connection.get.mock.calls[0][0];
+    dssh.validateUrl(
+      config.requestBase,
+      [
+        ['action', 'fetch_events_for_mailbox'],
+        ['mailbox_event_id', '123ABC'],
+      ],
+      connectionArgs.url
+    );
+    expect(connectionArgs.dataType).toBe('json');
+  });
+
+  test('fetched events are passed to the callback', () => {
+    const returnedEvents = [{id: 1}, {id: 2}];
+    let events = null;
+
+    dataStore.fetchEventsForMailbox('123ABC', (data) => {
+      events = data;
+    });
+
+    connection.get.mock.calls[0][0].success({mailboxEvents: returnedEvents});
+    expect(events).toStrictEqual(returnedEvents);
+  });
+});
+
+describe('#fetchEventsForIpActor', () => {
+  test('connects to the WHMCS backend to get events associated with the IP actor', () => {
+    dataStore.fetchEventsForIpActor('123ABC', () => null);
+
+    expect(connection.get.mock.calls.length).toBe(1);
+    const connectionArgs = connection.get.mock.calls[0][0];
+    dssh.validateUrl(
+      config.requestBase,
+      [
+        ['action', 'fetch_events_for_ip_actor'],
+        ['mailbox_event_id', '123ABC'],
+      ],
+      connectionArgs.url
+    );
+    expect(connectionArgs.dataType).toBe('json');
+  });
+
+  test('passes fetched events to the callback', () => {
+    const returnedEvents = [{id: 1}, {id: 2}];
+    let events = null;
+
+    dataStore.fetchEventsForIpActor('123ABC', (data) => {
+      events = data;
+    });
+
+    connection.get.mock.calls[0][0].success({mailboxEvents: returnedEvents});
+    expect(events).toStrictEqual(returnedEvents);
+  });
+});
+
+describe('#fetchEventsForForwardRecipient', () => {
+  test('connects to the backend to get events associated with the forward recipient', () => {
+    dataStore.fetchEventsForForwardRecipient('123ABC', () => null);
+
+    expect(connection.get.mock.calls.length).toBe(1);
+    const connectionArgs = connection.get.mock.calls[0][0];
+    dssh.validateUrl(
+      config.requestBase,
+      [
+        ['action', 'fetch_events_for_forward_recipient'],
+        ['mailbox_event_id', '123ABC'],
+      ],
+      connectionArgs.url
+    );
+    expect(connectionArgs.dataType).toBe('json');
+  });
+
+  test('passes fetched events to the callback', () => {
+    const returnedEvents = [{id: 1}, {id: 2}];
+    let events = null;
+
+    dataStore.fetchEventsForForwardRecipient('123ABC', (data) => {
+      events = data;
+    });
+
+    connection.get.mock.calls[0][0].success({mailboxEvents: returnedEvents});
+    expect(events).toStrictEqual(returnedEvents);
+  });
+});
