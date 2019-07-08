@@ -22,24 +22,33 @@ class Controller {
       break;
     case 'fetch_probably_malicious_events':
       $events = $this->api_client->getProbablyMaliciousMailboxEvents();
-      $output = json_encode(['mailboxEvents' => $events]);
+      $output = json_encode(['mailbox_events' => $events]);
       break;
     case 'fetch_events_for_mailbox':
       $events = $this->api_client->getEventsAssociatedWithMailboxAddress($params['mailbox_event_id']);
-      $output = json_encode(['mailboxEvents' => $events]);
+      $output = json_encode(['mailbox_events' => $events]);
       break;
     case 'fetch_events_for_ip_actor':
       $events = $this->api_client->getEventsAssociatedWithIpActor($params['mailbox_event_id']);
-      $output = json_encode(['mailboxEvents' => $events]);
+      $output = json_encode(['mailbox_events' => $events]);
       break;
     case 'fetch_events_for_forward_recipient':
       $events = $this->api_client->getEventsAssociatedWithForwardRecipient($params['mailbox_event_id']);
-      $output = json_encode(['mailboxEvents' => $events]);
+      $output = json_encode(['mailbox_events' => $events]);
+      break;
+    case 'update_mailbox_event':
+      $authenticityToken = array_key_exists('authenticity_token', $params) ? $params['authenticity_token'] : null;
+      if ($this->validateAuthenticityToken($authenticityToken)) {
+        $event = $this->api_client->updateMailboxEvent($params['mailbox_event_id'], $params['mailbox_event']);
+        $output = json_encode(['mailbox_event' => $event]);
+      } else {
+        $output = 'Incorrect authenticity token';
+      }
       break;
     default:
       $this->initialiseSession();
       $events = $this->api_client->getProbablyMaliciousMailboxEvents();
-      $output = $this->view->htmlForDashboard($events, $this->config);
+      $output = $this->view->htmlForDashboard($events, $this->config, $this->session_manager->getAuthenticityToken());
       break;
     }
     
@@ -50,5 +59,10 @@ class Controller {
     if ($this->session_manager->getAuthenticityToken() === null) {
       $this->session_manager->setAuthenticityToken();
     }
+  }
+
+  private function validateAuthenticityToken($providedAuthenticityToken) {
+    return !is_null($this->session_manager->getAuthenticityToken()) &&
+      $this->session_manager->getAuthenticityToken() === (int)$providedAuthenticityToken;
   }
 }

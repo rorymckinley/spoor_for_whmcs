@@ -4,7 +4,7 @@ const DashboardView = require('./DashboardView.js');
 
 $(function() {
   const requestPath = whmcsBaseUrl + adminBaseRoutePath + '/' + moduleLink;
-  const dataStore = new DataStore($, {requestBase: requestPath});
+  const dataStore = new DataStore($, {requestBase: requestPath, authenticityToken: authenticityToken});
   const dashboardView = new DashboardView($, (data) => console.log(`Clickety-click ${data}`));
   const dashboardController = new DashboardController(dataStore, dashboardView);
 

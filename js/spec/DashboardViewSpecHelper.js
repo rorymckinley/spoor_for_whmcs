@@ -74,4 +74,24 @@ module.exports = {
       }
     }
   },
+
+  validateDropdown(options) {
+    const {dropdown, items, selected, displayValues, jQuery} = options;
+
+    const dropdownItems = dropdown.find('option');
+
+    expect(dropdownItems.length).toBe(items.length);
+
+    for (const [index, expectedValue] of items.entries()) {
+      const actualItem = jQuery(dropdownItems[index]);
+
+      const actualValue = actualItem.attr('value');
+      const actualDisplay = actualItem.text();
+      expect(actualValue, `Option number ${index}`).toBe(expectedValue);
+      expect(actualDisplay, `Option number ${index}`).toBe(displayValues[index]);
+      if (expectedValue === selected) {
+        expect(actualItem.is(':selected'), `Option number ${index}`).toBeTruthy();
+      }
+    }
+  },
 };

@@ -44,14 +44,17 @@ const DashboardView = class {
    */
   displayMailboxEventDetail(eventData) {
     this.domAccessor('#event_detail_panel').show();
-    this.domAccessor('#event_mailbox_associated_events_panel').show();
-    this.domAccessor('#event_ip_actor_associated_events_panel').show();
-    this.domAccessor('#event_forward_recipient_associated_events_panel').show();
 
     this.domAccessor('td[event-detail-item="event_time"]').text(this.__timeHelper(eventData.event_time));
     this.domAccessor('td[event-detail-item="type"]').text(this.__typeHelper(eventData.type));
     this.domAccessor('td[event-detail-item="mailbox_address"]').text(eventData.mailbox_address);
     this.domAccessor('td[event-detail-item="host"]').text(eventData.host);
+    this.domAccessor('td[event-detail-item="forward_recipient"]').text(eventData.forward_recipient);
+    this.domAccessor('td[event-detail-item="assessment"]').html(this.__dropdownHelper({
+      items: eventData.operations.update.valid_assessments,
+      selected: eventData.latest_assessment,
+      displayFormatter: this.__assessmentHelper,
+    }));
 
     this.domAccessor('td[event-detail-item="ip_ip_address"]').text(eventData.ip_actor.ip_address);
     this.domAccessor('td[event-detail-item="ip_city"]').text(eventData.ip_actor.city);
@@ -60,6 +63,15 @@ const DashboardView = class {
     this.domAccessor('td[event-detail-item="ip_organisation"]').text(
       eventData.ip_actor.owner.organisation
     );
+
+    const updateButton = this.domAccessor('<button>', {class: 'btn btn-primary', text: 'Update Event'});
+    updateButton.click(() => {
+      this.observer({
+        action: 'update_mailbox_event', object_type: 'MailboxEvent', id: eventData.id,
+        data: {assessment: this.domAccessor('td[event-detail-item="assessment"] select').val()},
+      });
+    });
+    this.domAccessor('td[event-action-item="update_event"]').html(updateButton);
   }
 
   /**
@@ -288,6 +300,53 @@ const DashboardView = class {
     }
     table.append(tableBody);
     panel.html(table);
+  }
+
+  /**
+   * @param {object} options Options used to configure dropdown
+   * @param {function} displayFunction Function that does formatting of items for display
+   * @return {object} Representation of created dropdown
+   */
+  __dropdownHelper(options) {
+    const {items, selected, displayFormatter} = options;
+
+    const select = this.domAccessor('<select>');
+
+    for (const item of items) {
+      const option = this.domAccessor('<option>', {value: item}).text(displayFormatter(item));
+      if (item === selected) {
+        option.attr('selected', 'selected');
+      }
+      select.append(option);
+    }
+
+    return select;
+  }
+
+  /**
+   * Assessment helper - translate snake cased assessment to something prettier
+   * @param {string} assessment Snake cased assessment
+   * @return {string} Human readable assessment
+   */
+  __assessmentHelper(assessment) {
+    let output = null;
+
+    switch (assessment) {
+      case 'confirmed_benign':
+        output = 'Confirmed Benign';
+        break;
+      case 'probably_benign':
+        output = 'Probably Benign';
+        break;
+      case 'probably_malicious':
+        output = 'Probably Malicious';
+        break;
+      case 'confirmed_malicious':
+        output = 'Confirmed Malicious';
+        break;
+    };
+
+    return output;
   }
 };
 

@@ -9,9 +9,10 @@ const MailboxEvent = class {
 
 const connection = {
   get: jest.fn(),
+  post: jest.fn(),
 };
 
-const config = {requestBase: '/foo/admin/addonmodules.php?module=spoor'};
+const config = {requestBase: '/foo/admin/addonmodules.php?module=spoor', authenticityToken: 'foo-bar-baz'};
 const dataStore = new DataStore(connection, config);
 
 describe('.fetchProbablyMaliciousMailboxEvents', () => {
@@ -35,7 +36,7 @@ describe('.fetchProbablyMaliciousMailboxEvents', () => {
 
     // Trigger the callback when data is received
     connection.get.mock.calls[0][0].success({
-      mailboxEvents: [{id: 1}, {id: 2}],
+      mailbox_events: [{id: 1}, {id: 2}],
     });
     expect(events.length).toBe(2);
     expect(events[0].id).toBe(1);
@@ -68,7 +69,7 @@ describe('#fetchEventsForMailbox', () => {
       events = data;
     });
 
-    connection.get.mock.calls[0][0].success({mailboxEvents: returnedEvents});
+    connection.get.mock.calls[0][0].success({mailbox_events: returnedEvents});
     expect(events).toStrictEqual(returnedEvents);
   });
 });
@@ -98,7 +99,7 @@ describe('#fetchEventsForIpActor', () => {
       events = data;
     });
 
-    connection.get.mock.calls[0][0].success({mailboxEvents: returnedEvents});
+    connection.get.mock.calls[0][0].success({mailbox_events: returnedEvents});
     expect(events).toStrictEqual(returnedEvents);
   });
 });
@@ -128,7 +129,41 @@ describe('#fetchEventsForForwardRecipient', () => {
       events = data;
     });
 
-    connection.get.mock.calls[0][0].success({mailboxEvents: returnedEvents});
+    connection.get.mock.calls[0][0].success({mailbox_events: returnedEvents});
     expect(events).toStrictEqual(returnedEvents);
+  });
+});
+
+describe('#updateMailboxEvent', () => {
+  test('connects to the backend to update the mailbox event', () => {
+    dataStore.updateMailboxEvent('123ABC', {foo: 'bar'}, () => null);
+
+    expect(connection.post.mock.calls.length).toBe(1);
+    const connectionArgs = connection.post.mock.calls[0][0];
+    dssh.validateUrl(
+      config.requestBase,
+      [
+        ['action', 'update_mailbox_event'],
+        ['mailbox_event_id', '123ABC'],
+      ],
+      connectionArgs.url
+    );
+    expect(connectionArgs.dataType).toBe('json');
+    expect(connectionArgs.data).toStrictEqual({
+      mailbox_event: {foo: 'bar'},
+      authenticity_token: config.authenticityToken,
+    });
+  });
+
+  test('passes returned event data to the callback', () => {
+    const returnedEventData = {foo: 'bar'};
+    let eventData = null;
+
+    dataStore.updateMailboxEvent('123ABC', {foo: 'bar'}, (data) => {
+      eventData = data;
+    });
+
+    connection.post.mock.calls[0][0].success({mailbox_event: returnedEventData});
+    expect(eventData).toStrictEqual(returnedEventData);
   });
 });

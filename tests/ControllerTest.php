@@ -10,7 +10,7 @@ class ControllerTest extends TestCase {
   protected function setUp(): void {
     $this->api_client = $this->createMock(SpoorApiClient::class);
     $this->view = new View(new Smarty());
-    $this->session = array('spoor_session_authenticity_token' => '123ABC');
+    $this->session = array('spoor_session_authenticity_token' => 1000123);
     $this->session_manager = new SessionManager($this->session);
     $this->whmcs_config = [
       'modulelink' => 'admin/addonmodules.php?module=spoor'
@@ -53,6 +53,7 @@ class ControllerTest extends TestCase {
     $output = $this->controller->route($action, $this->params);
 
     $this->assertStringContainsString('Probably Malicious Events', $output);
+    $this->assertStringContainsString("authenticityToken = 1000123", $output);
   }
 
   public function testDefaultRouteNoDefinedSessionInitialisesSession() {
@@ -73,7 +74,7 @@ class ControllerTest extends TestCase {
     $action = null;
 
     $output = $this->controller->route($action, $this->params);
-    $this->assertEquals('123ABC', $this->session['spoor_session_authenticity_token']);
+    $this->assertEquals(1000123, $this->session['spoor_session_authenticity_token']);
   }
 
   public function testListMailboxEvents() {
@@ -126,7 +127,7 @@ class ControllerTest extends TestCase {
     $action = 'list_mailbox_events';
 
     $output = $this->controller->route($action, $this->params);
-    $this->assertEquals('123ABC', $this->session['spoor_session_authenticity_token']);
+    $this->assertEquals(1000123, $this->session['spoor_session_authenticity_token']);
   }
 
   public function testFetchProbablyMaliciousMailboxEvents() {
@@ -155,7 +156,7 @@ class ControllerTest extends TestCase {
     $action = 'fetch_probably_malicious_events';
 
     $output = $this->controller->route($action, $this->params);
-    $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
+    $this->assertEquals(json_encode(['mailbox_events' => $events]), $output);
   }
 
   public function testFetchEventsForMailbox() {
@@ -186,7 +187,7 @@ class ControllerTest extends TestCase {
     $this->params['mailbox_event_id'] = '123ABC';
 
     $output = $this->controller->route($action, $this->params);
-    $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
+    $this->assertEquals(json_encode(['mailbox_events' => $events]), $output);
   }
 
   public function testFetchEventsForIpActor() {
@@ -217,7 +218,7 @@ class ControllerTest extends TestCase {
     $this->params['mailbox_event_id'] = '123ABC';
 
     $output = $this->controller->route($action, $this->params);
-    $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
+    $this->assertEquals(json_encode(['mailbox_events' => $events]), $output);
   }
 
   public function testFetchEventsForForwardRecipient() {
@@ -248,6 +249,96 @@ class ControllerTest extends TestCase {
     $this->params['mailbox_event_id'] = '123ABC';
 
     $output = $this->controller->route($action, $this->params);
-    $this->assertEquals(json_encode(['mailboxEvents' => $events]), $output);
+    $this->assertEquals(json_encode(['mailbox_events' => $events]), $output);
+  }
+
+  public function testUpdateMailboxEvent() {
+    $event = array(
+      array(
+        'id' => '123ABC',
+        'host' => 'host1.test.com',
+        'mailbox_address' => 'unwitting@victim.zzz',
+        'ip_actor' => array(
+          'id' => '789GHI',
+          'ip_address' => '10.0.0.1',
+          'city' => 'Cape Town',
+          'country_code' => 'ZA',
+          'owner' => array(
+            'isp' => 'Awesome SP (Pty) Ltd',
+            'organisation' => 'awesome'
+          )
+        ),
+        'event_time' => 1557205608,
+        'type' => 'login'
+      ),
+    );
+
+    $this->params = [
+      'mailbox_event_id' => '123ABC',
+      'mailbox_event' => [
+        'assessment' => 'probably_benign'
+      ],
+      'authenticity_token' => '1000123',
+    ];
+  
+    $this->api_client->method('updateMailboxEvent')
+               ->with('123ABC', $this->params['mailbox_event'])
+               ->willReturn($event);
+
+    $action = 'update_mailbox_event';
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals(json_encode(['mailbox_event' => $event]), $output);
+  }
+
+  public function testUpdateMailboxEventNoAuthenticityTokenInSession() {
+    $this->session['spoor_session_authenticity_token'] = null;
+
+    $this->params = [
+      'mailbox_event_id' => '123ABC',
+      'mailbox_event' => [
+        'assessment' => 'probably_benign'
+      ],
+      'authenticity_token' => 1000123,
+    ];
+  
+    $this->api_client->expects($this->never())
+               ->method('updateMailboxEvent');
+
+    $action = 'update_mailbox_event';
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals('Incorrect authenticity token', $output);
+  }
+
+  public function testUpdateMailboxEventIncorrectAuthenticityToken() {
+    $this->params = [
+      'mailbox_event_id' => '123ABC',
+      'mailbox_event' => [
+        'assessment' => 'probably_benign'
+      ],
+      'authenticity_token' => 'NOT' . $this->session['spoor_session_authenticity_token'],
+    ];
+  
+    $this->api_client->expects($this->never())
+               ->method('updateMailboxEvent');
+
+    $action = 'update_mailbox_event';
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals('Incorrect authenticity token', $output);
+  }
+
+  public function testUpdateMailboxEventNoAuthenticityTokenProvided() {
+    $this->params = [
+      'mailbox_event_id' => '123ABC',
+      'mailbox_event' => [
+        'assessment' => 'probably_benign'
+      ],
+    ];
+  
+    $this->api_client->expects($this->never())
+               ->method('updateMailboxEvent');
+
+    $action = 'update_mailbox_event';
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals('Incorrect authenticity token', $output);
   }
 }

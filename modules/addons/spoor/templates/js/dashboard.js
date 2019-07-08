@@ -20,9 +20,7 @@ function () {
     this.dataStore = dataStore;
     this.view = view;
     this.view.addObserver(this.__viewObserver.bind(this));
-    this.mailboxEvents = {
-      probablyMalicious: []
-    };
+    this.mailboxEvents = [];
   }
   /**
    * Sets initial state of Dashboard
@@ -35,7 +33,7 @@ function () {
       var _this = this;
 
       this.dataStore.fetchProbablyMaliciousMailboxEvents(function (events) {
-        _this.mailboxEvents.probablyMalicious = events;
+        _this.mailboxEvents = events;
 
         _this.view.init(events);
       });
@@ -50,19 +48,29 @@ function () {
     value: function __viewObserver(viewEventData) {
       var _this2 = this;
 
-      var selectedEvent = this.mailboxEvents.probablyMalicious.filter(function (event) {
-        return event.id == viewEventData.id;
-      })[0];
-      this.view.displayMailboxEventDetail(selectedEvent);
-      this.dataStore.fetchEventsForMailbox(viewEventData.id, function (events) {
-        return _this2.view.displayMailboxAssociatedEvents(events);
-      });
-      this.dataStore.fetchEventsForIpActor(viewEventData.id, function (events) {
-        return _this2.view.displayIpActorAssociatedEvents(events);
-      });
-      this.dataStore.fetchEventsForForwardRecipient(viewEventData.id, function (events) {
-        return _this2.view.displayForwardRecipientAssociatedEvents(events);
-      });
+      switch (viewEventData.action) {
+        case 'show_detail':
+          var selectedEvent = this.mailboxEvents.filter(function (event) {
+            return event.id == viewEventData.id;
+          })[0];
+          this.view.displayMailboxEventDetail(selectedEvent);
+          this.dataStore.fetchEventsForMailbox(viewEventData.id, function (events) {
+            return _this2.view.displayMailboxAssociatedEvents(events);
+          });
+          this.dataStore.fetchEventsForIpActor(viewEventData.id, function (events) {
+            return _this2.view.displayIpActorAssociatedEvents(events);
+          });
+          this.dataStore.fetchEventsForForwardRecipient(viewEventData.id, function (events) {
+            return _this2.view.displayForwardRecipientAssociatedEvents(events);
+          });
+          break;
+
+        case 'update_mailbox_event':
+          this.dataStore.updateMailboxEvent(viewEventData.id, viewEventData.data, function (eventData) {
+            _this2.view.displayMailboxEventDetail(eventData);
+          });
+          break;
+      }
     }
   }]);
 
@@ -145,19 +153,39 @@ function () {
   }, {
     key: "displayMailboxEventDetail",
     value: function displayMailboxEventDetail(eventData) {
+      var _this2 = this;
+
       this.domAccessor('#event_detail_panel').show();
-      this.domAccessor('#event_mailbox_associated_events_panel').show();
-      this.domAccessor('#event_ip_actor_associated_events_panel').show();
-      this.domAccessor('#event_forward_recipient_associated_events_panel').show();
       this.domAccessor('td[event-detail-item="event_time"]').text(this.__timeHelper(eventData.event_time));
       this.domAccessor('td[event-detail-item="type"]').text(this.__typeHelper(eventData.type));
       this.domAccessor('td[event-detail-item="mailbox_address"]').text(eventData.mailbox_address);
       this.domAccessor('td[event-detail-item="host"]').text(eventData.host);
+      this.domAccessor('td[event-detail-item="forward_recipient"]').text(eventData.forward_recipient);
+      this.domAccessor('td[event-detail-item="assessment"]').html(this.__dropdownHelper({
+        items: eventData.operations.update.valid_assessments,
+        selected: eventData.latest_assessment,
+        displayFormatter: this.__assessmentHelper
+      }));
       this.domAccessor('td[event-detail-item="ip_ip_address"]').text(eventData.ip_actor.ip_address);
       this.domAccessor('td[event-detail-item="ip_city"]').text(eventData.ip_actor.city);
       this.domAccessor('td[event-detail-item="ip_country_code"]').text(eventData.ip_actor.country_code);
       this.domAccessor('td[event-detail-item="ip_isp"]').text(eventData.ip_actor.owner.isp);
       this.domAccessor('td[event-detail-item="ip_organisation"]').text(eventData.ip_actor.owner.organisation);
+      var updateButton = this.domAccessor('<button>', {
+        "class": 'btn btn-primary',
+        text: 'Update Event'
+      });
+      updateButton.click(function () {
+        _this2.observer({
+          action: 'update_mailbox_event',
+          object_type: 'MailboxEvent',
+          id: eventData.id,
+          data: {
+            assessment: _this2.domAccessor('td[event-detail-item="assessment"] select').val()
+          }
+        });
+      });
+      this.domAccessor('td[event-action-item="update_event"]').html(updateButton);
     }
     /**
      * Displays events associated with the selected Mailbox Event's mailbox address
@@ -544,6 +572,85 @@ function () {
       table.append(tableBody);
       panel.html(table);
     }
+    /**
+     * @param {object} options Options used to configure dropdown
+     * @param {function} displayFunction Function that does formatting of items for display
+     * @return {object} Representation of created dropdown
+     */
+
+  }, {
+    key: "__dropdownHelper",
+    value: function __dropdownHelper(options) {
+      var items = options.items,
+          selected = options.selected,
+          displayFormatter = options.displayFormatter;
+      var select = this.domAccessor('<select>');
+      var _iteratorNormalCompletion6 = true;
+      var _didIteratorError6 = false;
+      var _iteratorError6 = undefined;
+
+      try {
+        for (var _iterator6 = items[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+          var item = _step6.value;
+          var option = this.domAccessor('<option>', {
+            value: item
+          }).text(displayFormatter(item));
+
+          if (item === selected) {
+            option.attr('selected', 'selected');
+          }
+
+          select.append(option);
+        }
+      } catch (err) {
+        _didIteratorError6 = true;
+        _iteratorError6 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+            _iterator6["return"]();
+          }
+        } finally {
+          if (_didIteratorError6) {
+            throw _iteratorError6;
+          }
+        }
+      }
+
+      return select;
+    }
+    /**
+     * Assessment helper - translate snake cased assessment to something prettier
+     * @param {string} assessment Snake cased assessment
+     * @return {string} Human readable assessment
+     */
+
+  }, {
+    key: "__assessmentHelper",
+    value: function __assessmentHelper(assessment) {
+      var output = null;
+
+      switch (assessment) {
+        case 'confirmed_benign':
+          output = 'Confirmed Benign';
+          break;
+
+        case 'probably_benign':
+          output = 'Probably Benign';
+          break;
+
+        case 'probably_malicious':
+          output = 'Probably Malicious';
+          break;
+
+        case 'confirmed_malicious':
+          output = 'Confirmed Malicious';
+          break;
+      }
+
+      ;
+      return output;
+    }
   }]);
 
   return DashboardView;
@@ -618,6 +725,28 @@ function () {
       this.__getMailboxEvents(this.__buildUrl([['action', 'fetch_events_for_forward_recipient'], ['mailbox_event_id', mailboxEventId]]), callback);
     }
     /**
+     * Updates a MailboxEvent
+     * @param {string} mailboxEventId Id of the Mailbox Event
+     * @param {object} data Data to be updated
+     * @param {function} callback Callback function that is triggered when the data is successfully received
+     */
+
+  }, {
+    key: "updateMailboxEvent",
+    value: function updateMailboxEvent(mailboxEventId, data, callback) {
+      this.connection.post({
+        url: this.__buildUrl([['action', 'update_mailbox_event'], ['mailbox_event_id', mailboxEventId]]),
+        dataType: 'json',
+        data: {
+          mailbox_event: data,
+          authenticity_token: this.config.authenticityToken
+        },
+        success: function success(data) {
+          return callback(data.mailbox_event);
+        }
+      });
+    }
+    /**
      * Fetch mailbox events from WHMCS
      * @param {string} url Url for the WHMCS endpoint
      * @param {function} callback success callback function
@@ -630,7 +759,7 @@ function () {
         url: url,
         dataType: 'json',
         success: function success(data) {
-          callback(data.mailboxEvents);
+          callback(data.mailbox_events);
         }
       });
     }
@@ -689,7 +818,8 @@ var DashboardView = require('./DashboardView.js');
 $(function () {
   var requestPath = whmcsBaseUrl + adminBaseRoutePath + '/' + moduleLink;
   var dataStore = new DataStore($, {
-    requestBase: requestPath
+    requestBase: requestPath,
+    authenticityToken: authenticityToken
   });
   var dashboardView = new DashboardView($, function (data) {
     return console.log("Clickety-click ".concat(data));

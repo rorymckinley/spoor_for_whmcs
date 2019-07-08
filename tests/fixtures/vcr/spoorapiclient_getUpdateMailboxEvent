@@ -1,0 +1,35 @@
+
+-
+    request:
+        method: PATCH
+        url: 'https://spoor.capefox.co/api/mailbox_events/789GHI'
+        headers:
+            Host: spoor.capefox.co
+            Accept: application/json
+            Content-Type: application/json
+            Content-Length: '51'
+        body: '{"mailbox_event":{"assessment":"confirmed_benign"}}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: Cowboy
+            Date: 'Sat, 06 Jul 2019 14:16:27 GMT'
+            Connection: keep-alive
+            X-Frame-Options: SAMEORIGIN
+            X-Xss-Protection: '1; mode=block'
+            X-Content-Type-Options: nosniff
+            X-Download-Options: noopen
+            X-Permitted-Cross-Domain-Policies: none
+            Referrer-Policy: strict-origin-when-cross-origin
+            Content-Type: 'application/json; charset=utf-8'
+            Etag: 'W/"6e387046be8a3798ff07d8f5ba8b1a16"'
+            Cache-Control: 'max-age=0, private, must-revalidate'
+            X-Request-Id: 546fc597-a0fa-479e-9a68-b52c39d9d24e
+            X-Runtime: '0.125201'
+            Strict-Transport-Security: 'max-age=31536000; includeSubDomains'
+            Transfer-Encoding: chunked
+            Via: '1.1 vegur'
+        body: '{"mailbox_event":{"id":"789GHI","host":"host4.test.com","mailbox_address":"innocent@bystander.zzz","ip_actor":{"id":"009WER","ip_address":"10.0.0.4","city":"Cape Town","country_code":"ZA","owner":{"isp":"Awesome SP (Pty) Ltd","organisation":"awesome-isp"}},"event_time":1561199081,"type":"forward_added","latest_assessment":"confirmed_benign","operations":{"update":{"valid_assessments":["confirmed_benign","probably_benign","probably_malicious","confirmed_malicious"]}},"forward_recipient":"rorymckinley@gmail.com"}}'
