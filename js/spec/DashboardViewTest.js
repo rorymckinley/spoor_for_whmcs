@@ -19,9 +19,16 @@ const eventsAsData = [
         organisation: 'Bar Corp',
       },
     },
+    latest_assessment: 'confirmed_malicious',
+    operations: {
+      update: {
+        valid_assessments: ['confirmed_benign', 'probably_benign', 'probably_malicious', 'confirmed_malicious'],
+      },
+    },
     only_for_tests: {
       event_time: 'Sat Jun 22 2019 12:24:41 GMT+0200 (SAST)',
       type: 'Login',
+      assessments_display: ['Confirmed Benign', 'Probably Benign', 'Probably Malicious', 'Confirmed Malicious'],
     },
   },
   {
@@ -41,9 +48,16 @@ const eventsAsData = [
         organisation: 'Not Bar Corp',
       },
     },
+    latest_assessment: 'probably_benign',
+    operations: {
+      update: {
+        valid_assessments: ['confirmed_benign', 'probably_benign', 'probably_malicious', 'confirmed_malicious'],
+      },
+    },
     only_for_tests: {
       event_time: 'Sat Jun 22 2019 12:24:50 GMT+0200 (SAST)',
       type: 'Forward Added',
+      assessments_display: ['Confirmed Benign', 'Probably Benign', 'Probably Malicious', 'Confirmed Malicious'],
     },
   },
   {
@@ -63,9 +77,16 @@ const eventsAsData = [
         organisation: 'Baz Corp',
       },
     },
+    latest_assessment: 'confirmed_benign',
+    operations: {
+      update: {
+        valid_assessments: ['confirmed_benign', 'probably_benign', 'probably_malicious', 'confirmed_malicious'],
+      },
+    },
     only_for_tests: {
       event_time: 'Sat Jun 22 2019 12:24:55 GMT+0200 (SAST)',
       type: 'Forward Removed',
+      assessments_display: ['Confirmed Benign', 'Probably Benign', 'Probably Malicious', 'Confirmed Malicious'],
     },
   },
 ];
@@ -161,30 +182,9 @@ describe('displayMailboxEventDetail', () => {
             <td>Organisation</td>
             <td event-detail-item='ip_organisation'></td>
           </tr>
-        </table>
-      </div>
-
-      <div class="panel panel-default col-sm-4" id="event_mailbox_associated_events_panel" style="display:none">
-        <div class="panel-heading">Events Associated with the Mailbox Address</div>
-        <div class="panel-overlay">Loading Data</div>
-
-        <table class="table">
-        </table>
-      </div>
-
-      <div class="panel panel-default col-sm-4" id="event_ip_actor_associated_events_panel" style="display:none">
-        <div class="panel-heading">...</div>
-        <div class="panel-overlay">...</div>
-
-        <table class="table">
-        </table>
-      </div>
-
-      <div class="" id="event_forward_recipient_associated_events_panel" style="display:none">
-        <div class="panel-heading">...</div>
-        <div class="panel-overlay">...</div>
-
-        <table class="table">
+          <tr>
+            <td event-action-item='update_event'></td>
+          </tr>
         </table>
       </div>
     `;
@@ -204,7 +204,14 @@ describe('displayMailboxEventDetail', () => {
     expect(jQuery('td[event-detail-item="mailbox_address"]')[0].innerHTML).toBe(eventsAsData[0].mailbox_address);
     expect(jQuery('td[event-detail-item="host"]')[0].innerHTML).toBe(eventsAsData[0].host);
     expect(jQuery('td[event-detail-item="forward_recipient"]')[0].innerHTML).toBe('');
-    expect(jQuery('td[event-detail-item="assessment"]')[0].innerHTML).toBe('Probably Malicious');
+
+    dvsh.validateDropdown({
+      dropdown: jQuery('td[event-detail-item="assessment"] select'),
+      items: eventsAsData[0].operations.update.valid_assessments,
+      displayValues: eventsAsData[0].only_for_tests.assessments_display,
+      selected: eventsAsData[0].latest_assessment,
+      jQuery: jQuery,
+    });
 
     expect(jQuery('td[event-detail-item="ip_ip_address"]')[0].innerHTML).toBe(eventsAsData[0].ip_actor.ip_address);
     expect(jQuery('td[event-detail-item="ip_city"]')[0].innerHTML).toBe(eventsAsData[0].ip_actor.city);
@@ -214,28 +221,29 @@ describe('displayMailboxEventDetail', () => {
       eventsAsData[0].ip_actor.owner.organisation
     );
 
+    const updateButton = jQuery('td[event-action-item="update_event"] button');
+    expect(updateButton.hasClass('btn')).toBeTruthy();
+    expect(updateButton.hasClass('btn-primary')).toBeTruthy();
+    expect(updateButton.text()).toBe('Update Event');
+
     dashboardView.displayMailboxEventDetail(eventsAsData[1]);
     expect(jQuery('td[event-detail-item="type"]')[0].innerHTML).toBe('Forward Added');
+    expect(jQuery('td[event-detail-item="forward_recipient"]')[0].innerHTML).toBe(eventsAsData[1].forward_recipient);
 
     dashboardView.displayMailboxEventDetail(eventsAsData[2]);
     expect(jQuery('td[event-detail-item="type"]')[0].innerHTML).toBe('Forward Removed');
   });
-  it('makes the mailbox associated events panel visible', () => {
+  it('creates a listener that notifies the observer of an update', () => {
     dashboardView.displayMailboxEventDetail(eventsAsData[0]);
 
-    expect(jQuery('#event_mailbox_associated_events_panel').css('display')).toBe('block');
-  });
+    jQuery('td[event-detail-item="assessment"] select').val('confirmed_benign');
+    jQuery('td[event-action-item="update_event"] button').click();
 
-  it('makes the ip associated events panel visible', () => {
-    dashboardView.displayMailboxEventDetail(eventsAsData[0]);
-
-    expect(jQuery('#event_ip_actor_associated_events_panel').css('display')).toBe('block');
-  });
-
-  it('makes the forward recipient associated events panel visible', () => {
-    dashboardView.displayMailboxEventDetail(eventsAsData[0]);
-
-    expect(jQuery('#event_forward_recipient_associated_events_panel').css('display')).toBe('block');
+    expect(observer.mock.calls.length).toBe(1);
+    expect(observer.mock.calls[0][0]).toStrictEqual({
+      action: 'update_mailbox_event', object_type: 'MailboxEvent', id: eventsAsData[0].id,
+      data: {assessment: 'confirmed_benign'},
+    });
   });
 });
 

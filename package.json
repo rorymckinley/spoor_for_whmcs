@@ -1,6 +1,6 @@
 {
   "name": "spoor_for_whmcs",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "WHMCS Interface for Spoor",
   "main": "index.js",
   "directories": {

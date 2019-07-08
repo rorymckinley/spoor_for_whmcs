@@ -173,4 +173,17 @@ class SpoorApiClientTest extends TestCase {
       $events[0]
     );
   }
+
+  public function testUpdateMailboxEvent() {
+    $api_url = 'https://spoor.capefox.co';
+    $api_identifier = '66583669-0916-4add-afe8-6b71382ec8af';
+    $api_secret = '3003549644662c325a4716c1bbf9717f096e9e57cf00e78dd872ccfe133a2941f2e198da4ab83ad6a034214db57b59a1105a';
+    VCR::turnOn();
+    VCR::insertCassette('spoorapiclient_getUpdateMailboxEvent');
+    $api_client = new SpoorApiClient($api_url, $api_identifier, $api_secret);
+    $event = $api_client->updateMailboxEvent('789GHI', ['assessment' => 'confirmed_benign']);
+    VCR::eject();
+    VCR::turnOff();
+    $this->assertEquals('789GHI', $event['id']);
+  }
 }

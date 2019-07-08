@@ -47,10 +47,24 @@ const DataStore = class {
   fetchEventsForForwardRecipient(mailboxEventId, callback) {
     this.__getMailboxEvents(
       this.__buildUrl([['action', 'fetch_events_for_forward_recipient'], ['mailbox_event_id', mailboxEventId]]),
-      callback
+      callback,
     );
   }
 
+  /**
+   * Updates a MailboxEvent
+   * @param {string} mailboxEventId Id of the Mailbox Event
+   * @param {object} data Data to be updated
+   * @param {function} callback Callback function that is triggered when the data is successfully received
+   */
+  updateMailboxEvent(mailboxEventId, data, callback) {
+    this.connection.post({
+      url: this.__buildUrl([['action', 'update_mailbox_event'], ['mailbox_event_id', mailboxEventId]]),
+      dataType: 'json',
+      data: {mailbox_event: data, authenticity_token: this.config.authenticityToken},
+      success: (data) => callback(data.mailbox_event),
+    });
+  }
   /**
    * Fetch mailbox events from WHMCS
    * @param {string} url Url for the WHMCS endpoint
@@ -61,7 +75,7 @@ const DataStore = class {
       url: url,
       dataType: 'json',
       success: (data) => {
-        callback(data.mailboxEvents);
+        callback(data.mailbox_events);
       },
     });
   }

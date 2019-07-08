@@ -11,5 +11,5 @@ module.exports = {
 
   __paramsSort(firstEl, secondEl) {
     return firstEl[0] < secondEl[0] ? -1 : 1;
-  }
+  },
 };

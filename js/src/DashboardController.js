@@ -7,14 +7,14 @@ const DashboardController = class {
     this.dataStore = dataStore;
     this.view = view;
     this.view.addObserver(this.__viewObserver.bind(this));
-    this.mailboxEvents = {probablyMalicious: []};
+    this.mailboxEvents = [];
   }
   /**
    * Sets initial state of Dashboard
    */
   init() {
     this.dataStore.fetchProbablyMaliciousMailboxEvents((events) => {
-      this.mailboxEvents.probablyMalicious = events;
+      this.mailboxEvents = events;
       this.view.init(events);
     });
   }
@@ -24,21 +24,30 @@ const DashboardController = class {
    * @param {object} viewEventData An obect describing the nature of the event
    */
   __viewObserver(viewEventData) {
-    const selectedEvent = this.mailboxEvents.probablyMalicious.filter((event) => event.id == viewEventData.id)[0];
+    switch (viewEventData.action) {
+      case 'show_detail':
+        const selectedEvent = this.mailboxEvents.filter((event) => event.id == viewEventData.id)[0];
 
-    this.view.displayMailboxEventDetail(selectedEvent);
+        this.view.displayMailboxEventDetail(selectedEvent);
 
-    this.dataStore.fetchEventsForMailbox(
-      viewEventData.id, (events) => this.view.displayMailboxAssociatedEvents(events)
-    );
+        this.dataStore.fetchEventsForMailbox(
+          viewEventData.id, (events) => this.view.displayMailboxAssociatedEvents(events)
+        );
 
-    this.dataStore.fetchEventsForIpActor(
-      viewEventData.id, (events) => this.view.displayIpActorAssociatedEvents(events)
-    );
+        this.dataStore.fetchEventsForIpActor(
+          viewEventData.id, (events) => this.view.displayIpActorAssociatedEvents(events)
+        );
 
-    this.dataStore.fetchEventsForForwardRecipient(
-      viewEventData.id, (events) => this.view.displayForwardRecipientAssociatedEvents(events)
-    );
+        this.dataStore.fetchEventsForForwardRecipient(
+          viewEventData.id, (events) => this.view.displayForwardRecipientAssociatedEvents(events)
+        );
+        break;
+      case 'update_mailbox_event':
+        this.dataStore.updateMailboxEvent(viewEventData.id, viewEventData.data, (eventData) => {
+          this.view.displayMailboxEventDetail(eventData);
+        });
+        break;
+    }
   }
 };
 

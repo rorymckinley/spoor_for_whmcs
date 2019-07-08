@@ -1,5 +1,6 @@
 <script type='text/javascript'>
   var moduleLink = '{$modulelink}';
+  var authenticityToken = {$authenticityToken};
 </script>
 <link rel="stylesheet" type="text/css" href='../modules/addons/spoor/templates/css/dashboard.css'>
 <script src='../modules/addons/spoor/templates/js/dashboard.js' type='text/javascript'></script>
@@ -47,7 +48,10 @@
       <td>Forward Recipient</td><td event-detail-item='forward_recipient'></td><td>ISP</td><td event-detail-item='ip_isp'></td>
     </tr>
     <tr>
-      <td>Assessment</td><td event-detail-item='assessment'>Probably Malicious</td><td>Organisation</td><td event-detail-item='ip_organisation'></td>
+      <td>Assessment</td><td event-detail-item='assessment'></td><td>Organisation</td><td event-detail-item='ip_organisation'></td>
+    </tr>
+    <tr>
+      <td event-action-item='update_event'></td><td></td><td></td><td></td>
     </tr>
   </table>
 </div>

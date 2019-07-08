@@ -8,9 +8,10 @@ class View {
     $this->template_engine = $template_engine;
   }
 
-  public function htmlForDashboard($events, $config) {
+  public function htmlForDashboard($events, $config, $authenticityToken) {
     $this->template_engine->assign('events', $events);
     $this->template_engine->assign('modulelink', $config['modulelink']);
+    $this->template_engine->assign('authenticityToken', $authenticityToken);
     return $this->template_engine->fetch(__DIR__.'/../templates/dashboard.tpl');
   }
 
