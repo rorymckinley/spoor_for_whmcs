@@ -43,6 +43,8 @@ const DashboardController = class {
         );
         break;
       case 'update_mailbox_event':
+        this.view.disableInputOnEventDetail(viewEventData.id, 'update_in_progress');
+
         this.dataStore.updateMailboxEvent(viewEventData.id, viewEventData.data, (eventData) => {
           this.view.displayMailboxEventDetail(eventData);
         });

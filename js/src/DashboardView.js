@@ -128,6 +128,16 @@ const DashboardView = class {
       ],
     });
   }
+
+  /**
+   * Disable input on the event detail pane
+   */
+  disableInputOnEventDetail() {
+    const button = this.__eventDetailUpdateButton();
+    button.addClass('disabled');
+    button.text('Update in progress ...');
+    button.unbind('click');
+  }
   /**
    * A shortcut to the table containing the event listing
    * @return {object} Accessor for the table that lists the events
@@ -347,6 +357,14 @@ const DashboardView = class {
     };
 
     return output;
+  }
+
+  /**
+   * Returns an accessor for the mailbox event detail update button
+   * @return {string} Returns the accessor to the update button
+   */
+  __eventDetailUpdateButton() {
+    return this.domAccessor('td[event-action-item="update_event"] button');
   }
 };
 

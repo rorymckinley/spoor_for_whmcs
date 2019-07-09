@@ -14,6 +14,7 @@ const dashboardView = {
   displayMailboxAssociatedEvents: jest.fn(),
   displayIpActorAssociatedEvents: jest.fn(),
   displayForwardRecipientAssociatedEvents: jest.fn(),
+  disableInputOnEventDetail: jest.fn(),
 };
 
 const eventsAsData = [
@@ -122,7 +123,7 @@ describe('observing view events', () => {
     });
 
     it('requests all events for the associated mailbox address', () => {
-      const dashboardController = new DashboardController(dataStore, dashboardView);
+      new DashboardController(dataStore, dashboardView);
 
       // trigger the observer callback
       dashboardView.addObserver.mock.calls[0][0](
@@ -206,6 +207,20 @@ describe('observing view events', () => {
     });
   });
   describe('update_mailbox_event', () => {
+    it('instructs the view to prevent any further updates', () => {
+      new DashboardController(dataStore, dashboardView);
+
+      // Trigger the callback setup to observe the view
+      dashboardView.addObserver.mock.calls[0][0]({
+        action: 'update_mailbox_event', object_type: 'MailboxEvent', id: eventsAsData[0].id,
+        data: {assessment: 'confirmed_benign'},
+      });
+
+      expect(dashboardView.disableInputOnEventDetail.mock.calls.length).toBe(1);
+      expect(dashboardView.disableInputOnEventDetail.mock.calls[0][0]).toBe(eventsAsData[0].id);
+      expect(dashboardView.disableInputOnEventDetail.mock.calls[0][1]).toBe('update_in_progress');
+    });
+
     it('submits the data to the backend', () => {
       new DashboardController(dataStore, dashboardView);
 

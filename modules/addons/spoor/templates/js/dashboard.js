@@ -66,6 +66,7 @@ function () {
           break;
 
         case 'update_mailbox_event':
+          this.view.disableInputOnEventDetail(viewEventData.id, 'update_in_progress');
           this.dataStore.updateMailboxEvent(viewEventData.id, viewEventData.data, function (eventData) {
             _this2.view.displayMailboxEventDetail(eventData);
           });
@@ -242,6 +243,19 @@ function () {
           return event.ip_actor.country_code;
         }, undefined]]
       });
+    }
+    /**
+     * Disable input on the event detail pane
+     */
+
+  }, {
+    key: "disableInputOnEventDetail",
+    value: function disableInputOnEventDetail() {
+      var button = this.__eventDetailUpdateButton();
+
+      button.addClass('disabled');
+      button.text('Update in progress ...');
+      button.unbind('click');
     }
     /**
      * A shortcut to the table containing the event listing
@@ -650,6 +664,16 @@ function () {
 
       ;
       return output;
+    }
+    /**
+     * Returns an accessor for the mailbox event detail update button
+     * @return {string} Returns the accessor to the update button
+     */
+
+  }, {
+    key: "__eventDetailUpdateButton",
+    value: function __eventDetailUpdateButton() {
+      return this.domAccessor('td[event-action-item="update_event"] button');
     }
   }]);
 
