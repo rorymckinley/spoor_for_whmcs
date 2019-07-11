@@ -1,0 +1,32 @@
+
+-
+    request:
+        method: GET
+        url: 'https://spoorstaging.capefox.co/api/mailbox_events/fd320d92-e4bb-4868-b457-7b01c90cd972'
+        headers:
+            Host: spoorstaging.capefox.co
+            Accept: application/json
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: Cowboy
+            Date: 'Thu, 11 Jul 2019 11:45:50 GMT'
+            Connection: keep-alive
+            X-Frame-Options: SAMEORIGIN
+            X-Xss-Protection: '1; mode=block'
+            X-Content-Type-Options: nosniff
+            X-Download-Options: noopen
+            X-Permitted-Cross-Domain-Policies: none
+            Referrer-Policy: strict-origin-when-cross-origin
+            Content-Type: 'application/json; charset=utf-8'
+            Etag: 'W/"b6631a5c6dbec1603fbef9c0188022c5"'
+            Cache-Control: 'max-age=0, private, must-revalidate'
+            X-Request-Id: 2b5149ae-4329-4243-8b0d-7f65bdeaef6c
+            X-Runtime: '0.206340'
+            Strict-Transport-Security: 'max-age=31536000; includeSubDomains'
+            Transfer-Encoding: chunked
+            Via: '1.1 vegur'
+        body: '{"mailbox_event":{"id":"fd320d92-e4bb-4868-b457-7b01c90cd972","host":"host58.capefox.co","mailbox_address":"target2@capefox.co","ip_actor":{"id":"91a2f236-ce15-4e86-9ed0-4a3d06a56db8","ip_address":"10.0.0.5","city":"Cape Town","country_code":"ZA","owner":{"isp":"Fake ISP","organisation":"fake-isp"}},"event_time":1562529927,"type":"forward_added","latest_assessment":"probably_benign","operations":{"update":{"valid_assessments":["confirmed_benign","probably_benign","probably_malicious","confirmed_malicious"]}},"forward_recipient":"spoornotdodgyforward@yahoo.com"}}'

@@ -175,9 +175,9 @@ class SpoorApiClientTest extends TestCase {
   }
 
   public function testUpdateMailboxEvent() {
-    $api_url = 'https://spoor.capefox.co';
-    $api_identifier = '66583669-0916-4add-afe8-6b71382ec8af';
-    $api_secret = '3003549644662c325a4716c1bbf9717f096e9e57cf00e78dd872ccfe133a2941f2e198da4ab83ad6a034214db57b59a1105a';
+    $api_url = 'https://spoorstaging.capefox.co';
+    $api_identifier = '123ABC';
+    $api_secret = 'secretf00';
     VCR::turnOn();
     VCR::insertCassette('spoorapiclient_getUpdateMailboxEvent');
     $api_client = new SpoorApiClient($api_url, $api_identifier, $api_secret);
@@ -185,5 +185,18 @@ class SpoorApiClientTest extends TestCase {
     VCR::eject();
     VCR::turnOff();
     $this->assertEquals('789GHI', $event['id']);
+  }
+
+  public function testGetMailboxEvent() {
+    $api_url = 'https://spoorstaging.capefox.co';
+    $api_identifier = '3f4e22be-ab3f-47f7-976e-fee775dac5ba';
+    $api_secret = 'oochahNgee3To3oDeurahghow2goh6kinoov4oochuu9loosa8';
+    VCR::turnOn();
+    VCR::insertCassette('spoorapiclient_getMailboxEvent');
+    $api_client = new SpoorApiClient($api_url, $api_identifier, $api_secret);
+    $event = $api_client->getMailboxEvent('fd320d92-e4bb-4868-b457-7b01c90cd972');
+    VCR::eject();
+    VCR::turnOff();
+    $this->assertEquals('fd320d92-e4bb-4868-b457-7b01c90cd972', $event['id']);
   }
 }

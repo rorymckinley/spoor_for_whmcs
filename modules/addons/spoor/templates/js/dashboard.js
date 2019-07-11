@@ -21,6 +21,7 @@ function () {
     this.view = view;
     this.view.addObserver(this.__viewObserver.bind(this));
     this.mailboxEvents = [];
+    this.__eventInDetail = null;
   }
   /**
    * Sets initial state of Dashboard
@@ -50,10 +51,10 @@ function () {
 
       switch (viewEventData.action) {
         case 'show_detail':
-          var selectedEvent = this.mailboxEvents.filter(function (event) {
-            return event.id == viewEventData.id;
-          })[0];
-          this.view.displayMailboxEventDetail(selectedEvent);
+          this.__eventInDetail = viewEventData.id;
+          this.dataStore.fetchMailboxEvent(viewEventData.id, function (event) {
+            return _this2.view.displayMailboxEventDetail(event);
+          });
           this.dataStore.fetchEventsForMailbox(viewEventData.id, function (events) {
             return _this2.view.displayMailboxAssociatedEvents(events);
           });
@@ -765,6 +766,23 @@ function () {
           mailbox_event: data,
           authenticity_token: this.config.authenticityToken
         },
+        success: function success(data) {
+          return callback(data.mailbox_event);
+        }
+      });
+    }
+    /**
+     * Fetches a MailboxEvent
+     * @param {string} mailboxEventId Id of the Mailbox Event
+     * @param {function} callback Callback function that is triggered when the data is successfully received
+     */
+
+  }, {
+    key: "fetchMailboxEvent",
+    value: function fetchMailboxEvent(mailboxEventId, callback) {
+      this.connection.get({
+        url: this.__buildUrl([['action', 'fetch_mailbox_event'], ['mailbox_event_id', mailboxEventId]]),
+        dataType: 'json',
         success: function success(data) {
           return callback(data.mailbox_event);
         }
