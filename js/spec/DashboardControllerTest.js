@@ -5,6 +5,7 @@ const dataStore = {
   fetchEventsForMailbox: jest.fn(),
   fetchEventsForIpActor: jest.fn(),
   fetchEventsForForwardRecipient: jest.fn(),
+  fetchMailboxEvent: jest.fn(),
   updateMailboxEvent: jest.fn(),
 };
 const dashboardView = {
@@ -14,6 +15,7 @@ const dashboardView = {
   displayMailboxAssociatedEvents: jest.fn(),
   displayIpActorAssociatedEvents: jest.fn(),
   displayForwardRecipientAssociatedEvents: jest.fn(),
+  disableInputOnEventDetail: jest.fn(),
 };
 
 const eventsAsData = [
@@ -76,23 +78,10 @@ describe('on initialisation', () => {
 });
 
 describe('#init', () =>{
-  it('has no mailbox events loaded when it is initialised', () => {
-    const dc = new DashboardController(dataStore, dashboardView);
-    expect(dc.mailboxEvents).toStrictEqual([]);
-  });
   it('fetches a list of probably malicious mailbox events', () => {
     dashboardController.init();
 
     expect(dataStore.fetchProbablyMaliciousMailboxEvents.mock.calls.length).toBe(1);
-  });
-
-  it('stores the retrieved events', () => {
-    dashboardController.init();
-
-    // trigger the callback that was passed to the datastore
-    dataStore.fetchProbablyMaliciousMailboxEvents.mock.calls[0][0](eventsAsData);
-
-    expect(dashboardController.mailboxEvents).toBe(eventsAsData);
   });
 
   it('passes the events to the view to initialise', () => {
@@ -108,21 +97,45 @@ describe('#init', () =>{
 
 describe('observing view events', () => {
   describe('`show_detail` event', () => {
-    it('passes the detail to the view for display', () => {
+    it('persists the id of the item currently in focus', () => {
       const dashboardController = new DashboardController(dataStore, dashboardView);
-      dashboardController.mailboxEvents = eventsAsData;
+      expect(dashboardController.__eventInDetail).toBeNull();
+
+      // trigger the observer callback
+      dashboardView.addObserver.mock.calls[0][0](
+        {action: 'show_detail', object_type: 'MailboxEvent', id: eventsAsData[0].id}
+      );
+      expect(dashboardController.__eventInDetail).toBe(eventsAsData[0].id);
+    });
+    it('fetches the detail for the selected event', () => {
+      new DashboardController(dataStore, dashboardView);
 
       // trigger the observer callback
       dashboardView.addObserver.mock.calls[0][0](
         {action: 'show_detail', object_type: 'MailboxEvent', id: eventsAsData[0].id}
       );
 
+      expect(dataStore.fetchMailboxEvent.mock.calls.length).toBe(1);
+      expect(dataStore.fetchMailboxEvent.mock.calls[0][0]).toBe(eventsAsData[0].id);
+    });
+    it('passes the detail to the view for display', () => {
+      new DashboardController(dataStore, dashboardView);
+      const returnedEventData = {a: 1}
+
+      // trigger the observer callback
+      dashboardView.addObserver.mock.calls[0][0](
+        {action: 'show_detail', object_type: 'MailboxEvent', id: eventsAsData[0].id}
+      );
+
+      // Trigger the callback passed to the data store
+      dataStore.fetchMailboxEvent.mock.calls[0][1](returnedEventData);
+
       expect(dashboardView.displayMailboxEventDetail.mock.calls.length).toBe(1);
-      expect(dashboardView.displayMailboxEventDetail.mock.calls[0][0]).toStrictEqual(eventsAsData[0]);
+      expect(dashboardView.displayMailboxEventDetail.mock.calls[0][0]).toStrictEqual(returnedEventData);
     });
 
     it('requests all events for the associated mailbox address', () => {
-      const dashboardController = new DashboardController(dataStore, dashboardView);
+      new DashboardController(dataStore, dashboardView);
 
       // trigger the observer callback
       dashboardView.addObserver.mock.calls[0][0](
@@ -206,6 +219,20 @@ describe('observing view events', () => {
     });
   });
   describe('update_mailbox_event', () => {
+    it('instructs the view to prevent any further updates', () => {
+      new DashboardController(dataStore, dashboardView);
+
+      // Trigger the callback setup to observe the view
+      dashboardView.addObserver.mock.calls[0][0]({
+        action: 'update_mailbox_event', object_type: 'MailboxEvent', id: eventsAsData[0].id,
+        data: {assessment: 'confirmed_benign'},
+      });
+
+      expect(dashboardView.disableInputOnEventDetail.mock.calls.length).toBe(1);
+      expect(dashboardView.disableInputOnEventDetail.mock.calls[0][0]).toBe(eventsAsData[0].id);
+      expect(dashboardView.disableInputOnEventDetail.mock.calls[0][1]).toBe('update_in_progress');
+    });
+
     it('submits the data to the backend', () => {
       new DashboardController(dataStore, dashboardView);
 

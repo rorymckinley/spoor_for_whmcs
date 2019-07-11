@@ -357,3 +357,47 @@ describe('#displayForwardRecipientAssociatedEvents', () => {
     });
   });
 });
+
+describe('#disableInputOnEventDetail', () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="event_listing_panel">
+        <table>
+        </table>
+      </div>
+      <div class="panel panel-default" id="event_detail_panel" style="display:none">
+        <table>
+          <tr>
+            <td event-action-item='update_event'><button id="foo" class='btn btn-primary'>Update Event</button></td>
+          </tr>
+        </table>
+      </div>
+    `;
+  });
+  it('disables the button used to update mailbox details and sets the message as provided', () => {
+    dashboardView.disableInputOnEventDetail('123ABC', 'update_in_progress');
+
+    const button = jQuery('button');
+    expect(button.hasClass('btn')).toBeTruthy();
+    expect(button.hasClass('btn-primary')).toBeTruthy();
+    expect(button.hasClass('disabled')).toBeTruthy();
+  });
+
+  it('changes the button text', () => {
+    dashboardView.disableInputOnEventDetail('123ABC', 'update_in_progress');
+
+    const button = jQuery('button');
+    expect(button.text()).toBe('Update in progress ...');
+  });
+
+  it('disables any listeners bound to the click event', () => {
+    let onClickFunctioning = false;
+    jQuery('button').click(() => onClickFunctioning = true);
+
+    dashboardView.disableInputOnEventDetail('123ABC', 'update_in_progress');
+
+    const button = jQuery('button');
+    button.click();
+    expect(onClickFunctioning).toBeFalsy();
+  });
+});

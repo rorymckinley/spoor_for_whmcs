@@ -65,6 +65,19 @@ const DataStore = class {
       success: (data) => callback(data.mailbox_event),
     });
   }
+
+  /**
+   * Fetches a MailboxEvent
+   * @param {string} mailboxEventId Id of the Mailbox Event
+   * @param {function} callback Callback function that is triggered when the data is successfully received
+   */
+  fetchMailboxEvent(mailboxEventId, callback) {
+    this.connection.get({
+      url: this.__buildUrl([['action', 'fetch_mailbox_event'], ['mailbox_event_id', mailboxEventId]]),
+      dataType: 'json',
+      success: (data) => callback(data.mailbox_event),
+    });
+  }
   /**
    * Fetch mailbox events from WHMCS
    * @param {string} url Url for the WHMCS endpoint

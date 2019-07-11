@@ -7,14 +7,13 @@ const DashboardController = class {
     this.dataStore = dataStore;
     this.view = view;
     this.view.addObserver(this.__viewObserver.bind(this));
-    this.mailboxEvents = [];
+    this.__eventInDetail = null;
   }
   /**
    * Sets initial state of Dashboard
    */
   init() {
     this.dataStore.fetchProbablyMaliciousMailboxEvents((events) => {
-      this.mailboxEvents = events;
       this.view.init(events);
     });
   }
@@ -26,9 +25,9 @@ const DashboardController = class {
   __viewObserver(viewEventData) {
     switch (viewEventData.action) {
       case 'show_detail':
-        const selectedEvent = this.mailboxEvents.filter((event) => event.id == viewEventData.id)[0];
+        this.__eventInDetail = viewEventData.id;
 
-        this.view.displayMailboxEventDetail(selectedEvent);
+        this.dataStore.fetchMailboxEvent(viewEventData.id, (event) => this.view.displayMailboxEventDetail(event));
 
         this.dataStore.fetchEventsForMailbox(
           viewEventData.id, (events) => this.view.displayMailboxAssociatedEvents(events)
@@ -43,6 +42,8 @@ const DashboardController = class {
         );
         break;
       case 'update_mailbox_event':
+        this.view.disableInputOnEventDetail(viewEventData.id, 'update_in_progress');
+
         this.dataStore.updateMailboxEvent(viewEventData.id, viewEventData.data, (eventData) => {
           this.view.displayMailboxEventDetail(eventData);
         });

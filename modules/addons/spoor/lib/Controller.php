@@ -45,6 +45,10 @@ class Controller {
         $output = 'Incorrect authenticity token';
       }
       break;
+    case 'fetch_mailbox_event':
+      $event = $this->api_client->getMailboxEvent($params['mailbox_event_id']);
+      $output = json_encode(['mailbox_event' => $event]);
+      break;
     default:
       $this->initialiseSession();
       $events = $this->api_client->getProbablyMaliciousMailboxEvents();

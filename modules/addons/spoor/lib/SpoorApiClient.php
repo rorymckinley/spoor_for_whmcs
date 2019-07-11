@@ -86,6 +86,24 @@ class SpoorApiClient {
     return $mailbox_event;
   }
 
+  public function getMailboxEvent($mailbox_event_id) {
+    $ch = curl_init($this->api_url."/api/mailbox_events/$mailbox_event_id");
+
+    curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_setopt($ch, CURLOPT_USERPWD, $this->api_identifier.':'.$this->api_secret);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      'Accept: application/json',
+    ));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+    $mailbox_event = json_decode(curl_exec($ch), true)['mailbox_event'];
+
+    curl_close($ch);
+
+    return $mailbox_event;
+  }
+
   private function makeApiRequest($params) {
     $ch = curl_init($this->api_url.'/api/mailbox_events?'.$params);
 

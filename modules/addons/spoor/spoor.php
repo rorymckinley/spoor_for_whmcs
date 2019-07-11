@@ -17,7 +17,7 @@ function spoor_config() {
     'description' => 'A module that integrates with the Spoor API',
     'author' => 'Rory McKinley',
     'language' => 'english',
-    'version' => '0.0.4',
+    'version' => '0.0.5',
     'fields' => [
       'spoor_api_identifier' => [
         'Spoor API Identifier' => 'spoor_api_identifier',

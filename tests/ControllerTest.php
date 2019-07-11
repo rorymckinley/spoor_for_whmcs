@@ -341,4 +341,35 @@ class ControllerTest extends TestCase {
     $output = $this->controller->route($action, $this->params);
     $this->assertEquals('Incorrect authenticity token', $output);
   }
+
+  public function testFetchMailboxEvent() {
+    $this->params = [
+      'mailbox_event_id' => '123ABC',
+    ];
+    $event = array(
+      'id' => '123ABC',
+      'host' => 'host1.test.com',
+      'mailbox_address' => 'unwitting@victim.zzz',
+      'ip_actor' => array(
+        'id' => '789GHI',
+        'ip_address' => '10.0.0.1',
+        'city' => 'Cape Town',
+        'country_code' => 'ZA',
+        'owner' => array(
+          'isp' => 'Awesome SP (Pty) Ltd',
+          'organisation' => 'awesome'
+        )
+      ),
+      'event_time' => 1557205608,
+      'type' => 'login'
+    );
+    $this->api_client->method('getMailboxEvent')
+               ->with('123ABC')
+               ->willReturn($event);
+
+    $action = 'fetch_mailbox_event';
+
+    $output = $this->controller->route($action, $this->params);
+    $this->assertEquals(json_encode(['mailbox_event' => $event]), $output);
+  }
 }

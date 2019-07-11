@@ -167,3 +167,30 @@ describe('#updateMailboxEvent', () => {
     expect(eventData).toStrictEqual(returnedEventData);
   });
 });
+
+describe('#fetchMailboxEvent', () => {
+  test('connects to the backend to fetch the mailbox event', () => {
+    dataStore.fetchMailboxEvent('123ABC', () => null);
+
+    expect(connection.get.mock.calls.length).toBe(1);
+    const connectionArgs = connection.get.mock.calls[0][0];
+    dssh.validateUrl(
+      config.requestBase,
+      [
+        ['action', 'fetch_mailbox_event'],
+        ['mailbox_event_id', '123ABC'],
+      ],
+      connectionArgs.url
+    );
+    expect(connectionArgs.dataType).toBe('json');
+  });
+  test('passes returned event data to the callback', () => {
+    const returnedEventData = {foo: 'bar'};
+    let eventData = null;
+
+    dataStore.fetchMailboxEvent('1234ABC', (data) => eventData = data);
+
+    connection.get.mock.calls[0][0].success({mailbox_event: returnedEventData});
+    expect(eventData).toStrictEqual(returnedEventData);
+  });
+});
