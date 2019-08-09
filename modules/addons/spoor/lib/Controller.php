@@ -13,7 +13,7 @@ class Controller {
     $this->session_manager = $args['session_manager'];
   }
 
-  public function route($action, $params) {
+  public function route($action, $params, $body) {
     switch($action) {
     case 'list_mailbox_events':
       $this->initialiseSession();
@@ -37,10 +37,13 @@ class Controller {
       $output = json_encode(['mailbox_events' => $events]);
       break;
     case 'update_mailbox_event':
-      $authenticityToken = array_key_exists('authenticity_token', $params) ? $params['authenticity_token'] : null;
-      if ($this->validateAuthenticityToken($authenticityToken)) {
-        $event = $this->api_client->updateMailboxEvent($params['mailbox_event_id'], $params['mailbox_event']);
+      $authenticityToken = array_key_exists('authenticity_token', $body) ? $body['authenticity_token'] : null;
+      $eventData = array_key_exists('mailbox_event', $body) ? $body['mailbox_event'] : null;
+      if ($this->validateAuthenticityToken($authenticityToken) && $eventData) {
+        $event = $this->api_client->updateMailboxEvent($params['mailbox_event_id'], $body['mailbox_event']);
         $output = json_encode(['mailbox_event' => $event]);
+      } elseif (!$eventData) {
+        $output = 'No Mailbox Event data provided';
       } else {
         $output = 'Incorrect authenticity token';
       }

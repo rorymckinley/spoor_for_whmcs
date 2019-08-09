@@ -77,7 +77,7 @@ function spoor_output($vars) {
     'session_manager' => $session_manager
   ]);
 
-  echo $controller->route($_GET['action'], $_REQUEST);
+  echo $controller->route($_GET['action'], $_REQUEST, spoor_extract_json_body(getallheaders()));
   if ($_REQUEST['ajax'] === 'true') {
     die(); // Force WHMCS to return json
   }
@@ -91,5 +91,14 @@ function spoor_sidebar($vars) {
 
   if ($_REQUEST['ajax'] !== 'true') {
     echo $view->htmlForSidebar($vars['modulelink']);
+  }
+}
+
+function spoor_extract_json_body($request_headers) {
+  if(strpos($request_headers['Content-Type'], 'application/json') !== false) {
+    $body = file_get_contents('php://input');
+    return json_decode($body, true);
+  } else {
+    return [];
   }
 }

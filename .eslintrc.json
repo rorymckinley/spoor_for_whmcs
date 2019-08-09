@@ -5,7 +5,8 @@
         "es6": true
     },
     "extends": [
-        "google"
+        "google",
+        "plugin:vue/recommended"
     ],
     "globals": {
         "Atomics": "readonly",
