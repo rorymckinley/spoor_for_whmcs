@@ -1,9 +1,33 @@
-import {shallowMount} from '@vue/test-utils';
+import {createLocalVue, shallowMount} from '@vue/test-utils';
 import AssociatedEvent from '../vue_src/AssociatedEvent';
+import Vuex from 'vuex';
+import storeConfig from '../vue_src/store-config.js';
+
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('AssociatedEvent', () => {
   let eventData;
+  let store;
   beforeEach(() => {
+    store = new Vuex.Store(
+      Object.assign(
+        {},
+        storeConfig,
+        {
+          state: {
+            events: [
+              {id: '1A', latest_assessment: 'probably_malicious'},
+              {id: '1B', latest_assessment: 'probably_benign'},
+              {id: '1C', latest_assessment: 'probably_benign'},
+              {id: '1D', latest_assessment: 'probably_malicious'},
+              {id: '1E', latest_assessment: 'probably_malicious'},
+            ],
+            probablyMaliciousEventIds: ['1A', '1D', '1E'],
+          },
+        },
+      )
+    );
     eventData = {
       id: '123ABC',
       host: 'host1.test.com',
@@ -122,5 +146,49 @@ describe('AssociatedEvent', () => {
     });
     tableCells = wrapper.findAll('tr td');
     expect(tableCells.at(2).text()).toBe('Confirmed Malicious');
+  });
+
+  it('provides a control to mark an associated event as probably malicious', () => {
+    const mailboxEventId = '123ABC';
+    store.dispatch = jest.fn();
+    const wrapper = shallowMount(AssociatedEvent, {
+      propsData: {
+        eventData: Object.assign({}, eventData, {id: mailboxEventId, latest_assessment: 'probably_benign'}),
+      },
+      store,
+      localVue,
+    });
+
+    expect(
+      wrapper.findAll('span[spoor-control="setToProbablyMalicious"].glyphicon.glyphicon-warning-sign')
+    ).toHaveLength(1);
+    wrapper.find('span[spoor-control="setToProbablyMalicious"].glyphicon.glyphicon-warning-sign').trigger('click');
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith('updateMailboxEvent', {
+      mailboxEventId,
+      mailboxEvent: {assessment: 'probably_malicious'},
+    });
+  });
+
+  it.only('does not provide the control if the event assessment is either confirmed or probably malicious', () => {
+    let wrapper = shallowMount(AssociatedEvent, {
+      propsData: {
+        eventData: Object.assign({}, eventData, {latest_assessment: 'probably_malicious'}),
+      },
+    });
+
+    expect(
+      wrapper.findAll('span[spoor-control="setToProbablyMalicious"].glyphicon.glyphicon-warning-sign')
+    ).toHaveLength(0);
+
+    wrapper = shallowMount(AssociatedEvent, {
+      propsData: {
+        eventData: Object.assign({}, eventData, {latest_assessment: 'confirmed_malicious'}),
+      },
+    });
+
+    expect(
+      wrapper.findAll('span[spoor-control="setToProbablyMalicious"].glyphicon.glyphicon-warning-sign')
+    ).toHaveLength(0);
   });
 });

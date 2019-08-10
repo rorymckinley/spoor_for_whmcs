@@ -7,6 +7,14 @@
     <td>{{ eventData.ip_actor.ip_address }}</td>
     <td>{{ eventData.ip_actor.country_code }}</td>
     <td>{{ eventData.forward_recipient }}</td>
+    <td>
+      <span
+        class="glyphicon glyphicon-warning-sign"
+        spoor-control="setToProbablyMalicious"
+        @click="setToProbablyMalicious"
+        v-if="displayAssessmentControls()"
+      />
+    </td>
   </tr>
 </template>
 
@@ -18,6 +26,17 @@ export default {
     'eventData': {
       type: Object,
       default: () => {},
+    },
+  },
+  methods: {
+    displayAssessmentControls() {
+      return !(['probably_malicious', 'confirmed_malicious'].includes(this.eventData.latest_assessment));
+    },
+    setToProbablyMalicious() {
+      this.$store.dispatch('updateMailboxEvent', {
+        mailboxEventId: this.eventData.id,
+        mailboxEvent: {assessment: 'probably_malicious'},
+      });
     },
   },
 };
