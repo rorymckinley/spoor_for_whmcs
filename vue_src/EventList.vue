@@ -45,6 +45,10 @@ export default {
     Event,
   },
   props: {
+    seedAction: {
+      type: Array,
+      default: () => [],
+    },
     title: {
       type: String,
       default: '',
@@ -55,13 +59,13 @@ export default {
       return this.$store.getters.probablyMaliciousEvents;
     },
   },
+  mounted() {
+    this.$store.dispatch(...this.seedAction);
+  },
   methods: {
     refreshList() {
-      this.$emit('refresh-probably-malicious-list');
+      this.$emit('refresh-list');
     },
-  },
-  mounted() {
-    this.$store.dispatch('fetchProbablyMaliciousEvents');
   },
 };
 </script>
