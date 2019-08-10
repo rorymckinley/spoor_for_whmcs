@@ -52,7 +52,6 @@ class ControllerTest extends TestCase {
 
     $output = $this->controller->route($action, $this->params, []);
 
-    $this->assertStringContainsString('Probably Malicious Events', $output);
     $this->assertStringContainsString("authenticityToken = 1000123", $output);
   }
 
