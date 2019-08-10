@@ -34,6 +34,7 @@
             <th>IP Address</th>
             <th>IP Country Code</th>
             <th>Forward Recipient</th>
+            <th>&nbsp;</th> <!-- Holds a place open for actions -->
           </tr>
 
           <AssociatedEvent
