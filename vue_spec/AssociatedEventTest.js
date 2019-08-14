@@ -170,7 +170,7 @@ describe('AssociatedEvent', () => {
     });
   });
 
-  it.only('does not provide the control if the event assessment is either confirmed or probably malicious', () => {
+  it('does not provide the control if the event assessment is either confirmed or probably malicious', () => {
     let wrapper = shallowMount(AssociatedEvent, {
       propsData: {
         eventData: Object.assign({}, eventData, {latest_assessment: 'probably_malicious'}),

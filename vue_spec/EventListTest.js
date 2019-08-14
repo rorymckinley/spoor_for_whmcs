@@ -13,7 +13,7 @@ localVue.use(Vuex);
 describe('Event list component', () => {
   let store;
   const stubbedDispatch = jest.fn((action) => {
-    if (action !== 'fetchProbablyMaliciousEvents') {
+    if (action !== 'aFunctionToSeedTheList') {
       throw new Error(`Unexpected action ${action}`);
     }
   });
@@ -44,6 +44,7 @@ describe('Event list component', () => {
     const wrapper = shallowMount(EventList, {
       propsData: {
         title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
       },
       store,
       localVue,
@@ -56,18 +57,23 @@ describe('Event list component', () => {
     shallowMount(EventList, {
       propsData: {
         title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
       },
       store,
       localVue,
     });
 
-    expect(store.dispatch).toHaveBeenCalledWith('fetchProbablyMaliciousEvents');
+    expect(store.dispatch).toHaveBeenCalledWith('aFunctionToSeedTheList');
   });
 
   it('generates a collection of events for each probably malicious event', async () => {
     store.dispatch = stubbedDispatch;
     expect.assertions(3);
     const wrapper = shallowMount(EventList, {
+      propsData: {
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+      },
       store,
       localVue,
     });
@@ -92,12 +98,16 @@ describe('Event list component', () => {
   it('emits an event to refresh the list of probably malicious events', () => {
     store.dispatch = stubbedDispatch;
     const wrapper = shallowMount(EventList, {
+      propsData: {
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+      },
       store,
       localVue,
     });
 
     wrapper.find('span#refresh_list').trigger('click');
-    expect(wrapper.emitted('refresh-probably-malicious-list')).toHaveLength(1);
+    expect(wrapper.emitted('refresh-list')).toHaveLength(1);
   });
 });
 
