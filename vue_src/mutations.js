@@ -50,4 +50,7 @@ export default {
   setSelectedEventId(state, payload) {
     Vue.set(state, 'selectedEventId', payload);
   },
+  setSelectedPaneId(state, paneId) {
+    Vue.set(state, 'selectedPaneId', paneId);
+  },
 };

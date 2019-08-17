@@ -4,4 +4,6 @@ export default {
   selectedEventId: null,
   associatedEventIds: {
   },
+  panes: [],
+  selectedPaneId: null,
 };

@@ -142,4 +142,12 @@ describe('mutations', () => {
       },
     });
   });
+
+  it('sets the selectedPaneId', () => {
+    state = {selectedPaneId: 'foo'};
+
+    mutations.setSelectedPaneId(state, 'bar');
+
+    expect(state.selectedPaneId).toStrictEqual('bar');
+  });
 });

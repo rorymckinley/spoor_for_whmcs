@@ -191,4 +191,20 @@ describe('getters', () => {
       expect(getters.eventsAssociatedByForwardRecipient({associatedEventIds: {}, events: [{}]}, getters)).toEqual([]);
     });
   });
+  describe('panes', () => {
+    it('returns the panes', () => {
+      const state = {
+        panes: [{id: 'foo'}],
+      };
+      expect(getters.panes(state)).toStrictEqual(state.panes);
+    });
+  });
+  describe('selectedPaneId', () => {
+    it('returns the slected pane id', () => {
+      const state = {
+        selectedPaneId: 'foo-bar',
+      };
+      expect(getters.selectedPaneId(state)).toStrictEqual(state.selectedPaneId);
+    });
+  });
 });
