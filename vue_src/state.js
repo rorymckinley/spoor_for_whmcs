@@ -8,5 +8,5 @@ export default {
     {id: 'probably_malicious', title: 'Probably Malicious', seedAction: ['fetchProbablyMaliciousEvents']},
     {id: 'other', title: 'Other', seedAction: ['fetchProbablyMaliciousEvents']},
   ],
-  selectedPaneId: null,
+  selectedPaneId: 'probably_malicious',
 };
