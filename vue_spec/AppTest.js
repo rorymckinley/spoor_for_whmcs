@@ -11,12 +11,13 @@ localVue.use(Vuex);
 describe('And in the darkness bind them', () => {
   let store;
   let testState;
+  const mockDispatch = jest.fn();
 
   beforeEach(() => {
     testState = {
       panes: [
-        {id: 'foo', title: 'Foo', seed_action: ['fooAction']},
-        {id: 'bar', title: 'Bar', seed_action: ['barAction']},
+        {id: 'foo', title: 'Foo', seedAction: ['fooAction', {some: 'options'}]},
+        {id: 'bar', title: 'Bar', seedAction: ['barAction', {more: 'options'}]},
       ],
       selectedPaneId: 'bar',
     };
@@ -29,6 +30,7 @@ describe('And in the darkness bind them', () => {
         }
       )
     );
+    store.dispatch = mockDispatch;
   });
 
   it('creates a Pane instance for each of the configured panes', () => {
@@ -50,11 +52,11 @@ describe('And in the darkness bind them', () => {
     const panes = wrapper.findAll(Pane);
     expect(panes.at(0).props()).toStrictEqual({
       title: 'Foo',
-      seedAction: ['fooAction'],
+      seedAction: ['fooAction', {some: 'options'}],
     });
     expect(panes.at(1).props()).toStrictEqual({
       title: 'Bar',
-      seedAction: ['barAction'],
+      seedAction: ['barAction', {more: 'options'}],
     });
   });
 
@@ -77,5 +79,15 @@ describe('And in the darkness bind them', () => {
 
     const paneNavigations = wrapper.findAll(PaneNavigation);
     expect(paneNavigations).toHaveLength(1);
+  });
+
+  it('runs the seed actions for each of the panes on mounting', () => {
+    shallowMount(App, {
+      store,
+      localVue,
+    });
+
+    expect(mockDispatch).toHaveBeenCalledWith(...['fooAction', {some: 'options'}]);
+    expect(mockDispatch).toHaveBeenCalledWith(...['barAction', {more: 'options'}]);
   });
 });

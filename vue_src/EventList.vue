@@ -59,9 +59,6 @@ export default {
       return this.$store.getters.probablyMaliciousEvents;
     },
   },
-  mounted() {
-    this.$store.dispatch(...this.seedAction);
-  },
   methods: {
     refreshList() {
       this.$emit('refresh-list');

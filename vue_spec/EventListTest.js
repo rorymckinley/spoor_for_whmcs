@@ -52,20 +52,6 @@ describe('Event list component', () => {
     expect(wrapper.find('div.panel-heading span').text()).toContain('Foo-Bar-Baz');
   });
 
-  it('fetches and renders EventSummary items for each event returned from the backend', () => {
-    store.dispatch = stubbedDispatch;
-    shallowMount(EventList, {
-      propsData: {
-        title: 'Foo-Bar-Baz',
-        seedAction: ['aFunctionToSeedTheList'],
-      },
-      store,
-      localVue,
-    });
-
-    expect(store.dispatch).toHaveBeenCalledWith('aFunctionToSeedTheList');
-  });
-
   it('generates a collection of events for each probably malicious event', async () => {
     store.dispatch = stubbedDispatch;
     expect.assertions(3);

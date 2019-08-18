@@ -13,8 +13,8 @@ describe('PaneNavigation', () => {
   beforeEach(() => {
     testState = {
       panes: [
-        {id: 'foo', title: 'Foo', seed_action: ['fooAction']},
-        {id: 'bar', title: 'Bar', seed_action: ['barAction']},
+        {id: 'foo', title: 'Foo', seedAction: ['fooAction']},
+        {id: 'bar', title: 'Bar', seedAction: ['barAction']},
       ],
       selectedPaneId: 'bar',
     };

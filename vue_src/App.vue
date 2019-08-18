@@ -5,7 +5,7 @@
       <Pane
         v-for="pane in panes"
         :title="pane.title"
-        :seed-action="pane.seed_action"
+        :seed-action="pane.seedAction"
         :key="pane.title"
         v-show="selectedPane(pane.id)"
       />
@@ -17,14 +17,19 @@
 import Pane from './Pane.vue';
 import PaneNavigation from './PaneNavigation.vue';
 export default {
+  components: {
+    Pane,
+    PaneNavigation,
+  },
   computed: {
     panes() {
       return this.$store.getters.panes;
     },
   },
-  components: {
-    Pane,
-    PaneNavigation,
+  mounted() {
+    this.panes.forEach((pane) => {
+      this.$store.dispatch(...pane.seedAction);
+    });
   },
   methods: {
     selectedPane(paneId) {
