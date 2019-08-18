@@ -4,6 +4,9 @@ export default {
   selectedEventId: null,
   associatedEventIds: {
   },
-  panes: [],
+  panes: [
+    {id: 'probably_malicious', title: 'Probably Malicious', seedAction: ['fetchProbablyMaliciousEvents']},
+    {id: 'other', title: 'Other', seedAction: ['fetchProbablyMaliciousEvents']},
+  ],
   selectedPaneId: null,
 };

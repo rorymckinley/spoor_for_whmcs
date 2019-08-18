@@ -3,8 +3,11 @@
     <div>
       <PaneNavigation />
       <Pane
-        title="Probably Malicious Events"
-        :seed-action="['fetchProbablyMaliciousEvents']"
+        v-for="pane in panes"
+        :title="pane.title"
+        :seed-action="pane.seed_action"
+        :key="pane.title"
+        v-show="selectedPane(pane.id)"
       />
     </div>
   </div>
@@ -14,9 +17,19 @@
 import Pane from './Pane.vue';
 import PaneNavigation from './PaneNavigation.vue';
 export default {
+  computed: {
+    panes() {
+      return this.$store.getters.panes;
+    },
+  },
   components: {
     Pane,
     PaneNavigation,
+  },
+  methods: {
+    selectedPane(paneId) {
+      return this.$store.getters.selectedPaneId === paneId;
+    },
   },
 };
 </script>

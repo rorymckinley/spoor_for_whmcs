@@ -10,36 +10,66 @@ localVue.use(Vuex);
 
 describe('And in the darkness bind them', () => {
   let store;
+  let testState;
 
   beforeEach(() => {
-    store = new Vuex.Store(storeConfig);
+    testState = {
+      panes: [
+        {id: 'foo', title: 'Foo', seed_action: ['fooAction']},
+        {id: 'bar', title: 'Bar', seed_action: ['barAction']},
+      ],
+      selectedPaneId: 'bar',
+    };
+    store = new Vuex.Store(
+      Object.assign(
+        {},
+        storeConfig,
+        {
+          state: Object.assign({}, storeConfig.state, testState),
+        }
+      )
+    );
   });
 
-  it('creates a Pane instance', () => {
+  it('creates a Pane instance for each of the configured panes', () => {
     const wrapper = shallowMount(App, {
       store,
       localVue,
     });
 
     const panes = wrapper.findAll(Pane);
-    expect(panes).toHaveLength(1);
+    expect(panes).toHaveLength(2);
   });
 
-  it('sets up the first pane for probably malicious events', () => {
+  it('sets up the selected panes', () => {
     const wrapper = shallowMount(App, {
       store,
       localVue,
     });
 
     const panes = wrapper.findAll(Pane);
-    const props = panes.at(0).props();
-    expect(props).toStrictEqual({
-      title: 'Probably Malicious Events',
-      seedAction: ['fetchProbablyMaliciousEvents'],
+    expect(panes.at(0).props()).toStrictEqual({
+      title: 'Foo',
+      seedAction: ['fooAction'],
+    });
+    expect(panes.at(1).props()).toStrictEqual({
+      title: 'Bar',
+      seedAction: ['barAction'],
     });
   });
 
-  it('creates a PaneNav element for the Probably Malicious pane', () => {
+  it('only makes the selected pane visible', () => {
+    const wrapper = shallowMount(App, {
+      store,
+      localVue,
+    });
+
+    const panes = wrapper.findAll(Pane);
+    expect(panes.at(0).isVisible()).toBeFalsy();
+    expect(panes.at(1).isVisible()).toBeTruthy();
+  });
+
+  it('creates a PaneNavigation element', () => {
     const wrapper = shallowMount(App, {
       store,
       localVue,

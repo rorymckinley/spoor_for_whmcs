@@ -14,7 +14,7 @@ describe('PaneNavigation', () => {
     testState = {
       panes: [
         {id: 'foo', title: 'Foo', seed_action: ['fooAction']},
-        {id: 'bar', title: 'Bar', seed_action: ['fooAction']},
+        {id: 'bar', title: 'Bar', seed_action: ['barAction']},
       ],
       selectedPaneId: 'bar',
     };
