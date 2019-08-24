@@ -22,6 +22,12 @@ class SpoorApiClient {
     return $this->makeApiRequest($params);
   }
 
+  public function getConfirmedMaliciousMailboxEvents() {
+    $params = http_build_query(array('mailbox_events' => array('class' => 'confirmed_malicious')));
+
+    return $this->makeApiRequest($params);
+  }
+
   public function getEventsAssociatedWithMailboxAddress($mailbox_event_id) {
     $params = http_build_query(
       array(

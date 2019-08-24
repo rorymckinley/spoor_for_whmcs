@@ -1,12 +1,20 @@
 import axios from 'axios';
 
 export default {
-  fetchProbablyMaliciousEvents(context) {
+  fetchProbablyMaliciousEvents(context, {viewKey}) {
     axios
       .get(`${requestPath}&ajax=true&action=fetch_probably_malicious_events`)
       .then((response) => {
         context.commit('updateEvents', {events: response.data.mailbox_events});
-        context.commit('updateProbablyMaliciousEventIds', {events: response.data.mailbox_events});
+        context.commit('updatePaneView', {events: response.data.mailbox_events, viewKey});
+      });
+  },
+  fetchConfirmedMaliciousEvents(context, {viewKey}) {
+    axios
+      .get(`${requestPath}&ajax=true&action=fetch_confirmed_malicious_events`)
+      .then((response) => {
+        context.commit('updateEvents', {events: response.data.mailbox_events});
+        context.commit('updatePaneView', {events: response.data.mailbox_events, viewKey});
       });
   },
   fetchAssociatedMailboxEvents(context, mailboxEventId) {

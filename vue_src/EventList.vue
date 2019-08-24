@@ -53,14 +53,15 @@ export default {
       type: String,
       default: '',
     },
+    viewKey: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     events: function() {
-      return this.$store.getters.probablyMaliciousEvents;
+      return this.$store.getters.paneViewEvents(this.viewKey);
     },
-  },
-  mounted() {
-    this.$store.dispatch(...this.seedAction);
   },
   methods: {
     refreshList() {

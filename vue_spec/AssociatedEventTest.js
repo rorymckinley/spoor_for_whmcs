@@ -52,7 +52,7 @@ describe('AssociatedEvent', () => {
         },
       },
       only_for_tests: {
-        event_time: '2019-06-22 12:24:41 GMT+2',
+        event_time: new Date(1561199081 * 1000).toLocaleString('default', {timeZoneName: 'short'}),
         type: 'Login',
         assessment: 'Confirmed Malicious',
         assessments_display: ['Confirmed Benign', 'Probably Benign', 'Probably Malicious', 'Confirmed Malicious'],

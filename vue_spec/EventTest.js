@@ -35,7 +35,7 @@ describe('Event component', () => {
         },
       },
       only_for_tests: {
-        event_time: 'Sat Jun 22 2019 12:24:41 GMT+0200 (SAST)',
+        event_time: new Date(1561199081 * 1000).toLocaleString('default', {timeZoneName: 'short'}),
         type: 'Login',
         assessments_display: ['Confirmed Benign', 'Probably Benign', 'Probably Malicious', 'Confirmed Malicious'],
       },
@@ -63,7 +63,7 @@ describe('Event component', () => {
 
     const tds = wrapper.findAll('tr td');
     expect(tds.length).toBe(4);
-    expect(tds.at(0).text()).toBe('2019-06-22 12:24:41 GMT+2');
+    expect(tds.at(0).text()).toBe(eventData.only_for_tests.event_time);
     expect(tds.at(1).text()).toBe('Login');
     expect(tds.at(2).text()).toBe('hapless@victim.co.za');
     expect(tds.at(3).text()).toBe('host1.test.com');

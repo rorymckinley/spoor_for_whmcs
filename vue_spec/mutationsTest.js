@@ -14,7 +14,10 @@ describe('mutations', () => {
         {id: '1D', latest_assessment: 'probably_malicious'},
         {id: '1E', latest_assessment: 'probably_malicious'},
       ],
-      probablyMaliciousEventIds: ['1A', '1D'],
+      paneViews: {
+        fooEventIds: ['1A', '1D'],
+        barEventIds: ['1D', '1E'],
+      },
     };
   });
   afterEach(() => {
@@ -141,5 +144,25 @@ describe('mutations', () => {
         byMailboxAddress: [],
       },
     });
+  });
+
+  it('sets the selectedPaneId', () => {
+    state = {selectedPaneId: 'foo'};
+
+    mutations.setSelectedPaneId(state, 'bar');
+
+    expect(state.selectedPaneId).toStrictEqual('bar');
+  });
+
+  it('updates the selected paneView with the ids of the events provided', () => {
+    mutations.updatePaneView(state, {
+      events: [
+        {id: '1C', latest_assessment: 'confirmed_benign', foo: 'bar-baz'},
+        {id: '1F', latest_assessment: 'probably_benign'},
+        {id: '1G', latest_assessment: 'confirmed_benign'},
+      ],
+      viewKey: 'fooEventIds',
+    });
+    expect(state.paneViews.fooEventIds).toStrictEqual(['1C', '1F', '1G']);
   });
 });

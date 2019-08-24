@@ -32,7 +32,9 @@ describe('Event list component', () => {
               {id: '1D', latest_assessment: 'probably_malicious'},
               {id: '1E', latest_assessment: 'probably_malicious'},
             ],
-            probablyMaliciousEventIds: ['1A', '1D', '1E'],
+            paneViews: {
+              relevantEventIds: ['1A', '1D', '1E'],
+            },
           },
         },
       )
@@ -45,6 +47,7 @@ describe('Event list component', () => {
       propsData: {
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEventIds',
       },
       store,
       localVue,
@@ -52,27 +55,14 @@ describe('Event list component', () => {
     expect(wrapper.find('div.panel-heading span').text()).toContain('Foo-Bar-Baz');
   });
 
-  it('fetches and renders EventSummary items for each event returned from the backend', () => {
+  it('generates a collection of events for each event id in the specified pane view', async () => {
     store.dispatch = stubbedDispatch;
-    shallowMount(EventList, {
-      propsData: {
-        title: 'Foo-Bar-Baz',
-        seedAction: ['aFunctionToSeedTheList'],
-      },
-      store,
-      localVue,
-    });
-
-    expect(store.dispatch).toHaveBeenCalledWith('aFunctionToSeedTheList');
-  });
-
-  it('generates a collection of events for each probably malicious event', async () => {
-    store.dispatch = stubbedDispatch;
-    expect.assertions(3);
+    expect.assertions(5);
     const wrapper = shallowMount(EventList, {
       propsData: {
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEventIds',
       },
       store,
       localVue,
@@ -83,6 +73,12 @@ describe('Event list component', () => {
 
     expect(events.at(0).props()).toStrictEqual({
       eventData: {id: '1A', latest_assessment: 'probably_malicious'},
+    });
+    expect(events.at(1).props()).toStrictEqual({
+      eventData: {id: '1D', latest_assessment: 'probably_malicious'},
+    });
+    expect(events.at(2).props()).toStrictEqual({
+      eventData: {id: '1E', latest_assessment: 'probably_malicious'},
     });
 
     store.commit('setEventAssessment', {id: '1A', assessment: 'probably_benign'});
@@ -101,6 +97,7 @@ describe('Event list component', () => {
       propsData: {
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEventIds',
       },
       store,
       localVue,

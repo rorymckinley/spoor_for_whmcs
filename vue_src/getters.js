@@ -32,6 +32,12 @@ export default {
       return state.events.filter((event) => state.associatedEventIds[selected].byMailboxAddress.includes(event.id));
     }
   },
+  panes(state) {
+    return state.panes;
+  },
+  paneViewEvents(state) {
+    return (paneViewKey) => state.events.filter((event) => state.paneViews[paneViewKey].includes(event.id));
+  },
   probablyMaliciousEvents(state) {
     return state.events.filter((event) => state.probablyMaliciousEventIds.includes(event.id));
   },
@@ -44,5 +50,8 @@ export default {
     } else {
       return state.events.find((event) => event.id === getters.selectedEventId);
     }
+  },
+  selectedPaneId(state) {
+    return state.selectedPaneId;
   },
 };

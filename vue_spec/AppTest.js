@@ -1,6 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import App from '../vue_src/App.vue';
 import Pane from '../vue_src/Pane.vue';
+import PaneNavigation from '../vue_src/PaneNavigation.vue';
 import Vuex from 'vuex';
 import storeConfig from '../vue_src/store-config.js';
 
@@ -9,50 +10,86 @@ localVue.use(Vuex);
 
 describe('And in the darkness bind them', () => {
   let store;
+  let testState;
+  const mockDispatch = jest.fn();
 
   beforeEach(() => {
+    testState = {
+      panes: [
+        {
+          id: 'foo',
+          title: 'Foo',
+          seedAction: ['fooAction', {some: 'options'}],
+          viewKey: 'fooKey',
+        },
+        {
+          id: 'bar',
+          title: 'Bar',
+          seedAction: ['barAction', {more: 'options'}],
+          viewKey: 'barKey',
+        },
+      ],
+      selectedPaneId: 'bar',
+    };
     store = new Vuex.Store(
       Object.assign(
         {},
         storeConfig,
         {
-          state: {
-            events: [
-              {id: '1A', latest_assessment: 'probably_malicious'},
-              {id: '1B', latest_assessment: 'probably_benign'},
-              {id: '1C', latest_assessment: 'probably_benign'},
-              {id: '1D', latest_assessment: 'probably_malicious'},
-              {id: '1E', latest_assessment: 'probably_malicious'},
-            ],
-            probablyMaliciousEventIds: ['1A', '1D', '1E'],
-            selectedEventId: null,
-          },
-        },
+          state: Object.assign({}, storeConfig.state, testState),
+        }
       )
     );
+    store.dispatch = mockDispatch;
   });
 
-  it('creates a Pane instance', () => {
+  it('creates a Pane instance for each of the configured panes', () => {
     const wrapper = shallowMount(App, {
       store,
       localVue,
     });
 
     const panes = wrapper.findAll(Pane);
-    expect(panes).toHaveLength(1);
+    expect(panes).toHaveLength(2);
   });
 
-  it('sets up the first pane for probably malicious events', () => {
+  it('sets up the selected panes', () => {
     const wrapper = shallowMount(App, {
       store,
       localVue,
     });
 
     const panes = wrapper.findAll(Pane);
-    const props = panes.at(0).props();
-    expect(props).toStrictEqual({
-      title: 'Probably Malicious Events',
-      seedAction: ['fetchProbablyMaliciousEvents'],
+    expect(panes.at(0).props()).toStrictEqual({
+      title: 'Foo',
+      seedAction: ['fooAction', {some: 'options'}],
+      viewKey: 'fooKey',
     });
+    expect(panes.at(1).props()).toStrictEqual({
+      title: 'Bar',
+      seedAction: ['barAction', {more: 'options'}],
+      viewKey: 'barKey',
+    });
+  });
+
+  it('only makes the selected pane visible', () => {
+    const wrapper = shallowMount(App, {
+      store,
+      localVue,
+    });
+
+    const panes = wrapper.findAll(Pane);
+    expect(panes.at(0).isVisible()).toBeFalsy();
+    expect(panes.at(1).isVisible()).toBeTruthy();
+  });
+
+  it('creates a PaneNavigation element', () => {
+    const wrapper = shallowMount(App, {
+      store,
+      localVue,
+    });
+
+    const paneNavigations = wrapper.findAll(PaneNavigation);
+    expect(paneNavigations).toHaveLength(1);
   });
 });

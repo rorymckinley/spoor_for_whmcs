@@ -158,6 +158,35 @@ class ControllerTest extends TestCase {
     $this->assertEquals(json_encode(['mailbox_events' => $events]), $output);
   }
 
+  public function testFetchConfirmedMaliciousMailboxEvents() {
+    $events = array(
+      array(
+        'id' => '123ABC',
+        'host' => 'host1.test.com',
+        'mailbox_address' => 'unwitting@victim.zzz',
+        'ip_actor' => array(
+          'id' => '789GHI',
+          'ip_address' => '10.0.0.1',
+          'city' => 'Cape Town',
+          'country_code' => 'ZA',
+          'owner' => array(
+            'isp' => 'Awesome SP (Pty) Ltd',
+            'organisation' => 'awesome'
+          )
+        ),
+        'event_time' => 1557205608,
+        'type' => 'login'
+      ),
+    );
+    $this->api_client->method('getConfirmedMaliciousMailboxEvents')
+               ->willReturn($events);
+
+    $action = 'fetch_confirmed_malicious_events';
+
+    $output = $this->controller->route($action, $this->params, []);
+    $this->assertEquals(json_encode(['mailbox_events' => $events]), $output);
+  }
+
   public function testFetchEventsForMailbox() {
     $events = array(
       array(

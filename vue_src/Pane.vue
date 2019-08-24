@@ -3,6 +3,7 @@
     <EventList
       :title="title"
       :seed-action="seedAction"
+      :view-key="viewKey"
       @refresh-list="refreshList"
     />
     <EventDetail
@@ -33,6 +34,10 @@ export default {
       type: String,
       default: '',
     },
+    viewKey: {
+      type: String,
+      default: '',
+    },
   },
   computed: {
     selectedEventData() {
@@ -42,6 +47,9 @@ export default {
       return this.$store.getters.selectedEventId;
     },
   },
+  mounted() {
+    this.seedData();
+  },
   methods: {
     updateMailboxEvent(mailboxEventId, data) {
       this.$store.dispatch('updateMailboxEvent', {
@@ -50,7 +58,11 @@ export default {
       });
     },
     refreshList() {
-      this.$store.dispatch(...this.seedAction);
+      this.seedData();
+    },
+    seedData() {
+      const [action, options] = this.seedAction;
+      this.$store.dispatch(action, Object.assign({}, options, {viewKey: this.viewKey}));
     },
   },
 };

@@ -84,14 +84,7 @@ function spoor_output($vars) {
 }
 
 function spoor_sidebar($vars) {
-  $smarty = new Smarty();
-  $smarty->compile_dir = $GLOBALS['templates_compiledir'];
-
-  $view = new View($smarty);
-
-  if ($_REQUEST['ajax'] !== 'true') {
-    echo $view->htmlForSidebar($vars['modulelink']);
-  }
+  return "";
 }
 
 function spoor_extract_json_body($request_headers) {

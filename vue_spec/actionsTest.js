@@ -39,16 +39,33 @@ describe('actions', () => {
       axios.get = jest.fn(() => Promise.resolve(response));
     });
     it('fetches the list of events from the backend', () => {
-      actions.fetchProbablyMaliciousEvents(context);
+      actions.fetchProbablyMaliciousEvents(context, {viewKey: 'selectedPaneView'});
       expect(axios.get).toHaveBeenCalledWith(`${window.requestPath}&ajax=true&action=fetch_probably_malicious_events`);
     });
-    it('mutates the collection of events as well as the collection of probably malicious event ids', async () => {
+    it('mutates the collection of events as well as the specified paneView', async () => {
       expect.assertions(3);
-      actions.fetchProbablyMaliciousEvents(context);
+      actions.fetchProbablyMaliciousEvents(context, {viewKey: 'selectedPaneView'});
       await flushPromises;
       expect(context.commit.mock.calls.length).toBe(2);
-      expect(context.commit.mock.calls[0]).toEqual(['updateEvents', {events: events}]);
-      expect(context.commit.mock.calls[1]).toEqual(['updateProbablyMaliciousEventIds', {events: events}]);
+      expect(context.commit.mock.calls[0]).toEqual(['updateEvents', {events}]);
+      expect(context.commit.mock.calls[1]).toEqual(['updatePaneView', {events, viewKey: 'selectedPaneView'}]);
+    });
+  });
+  describe('fetchConfirmedMaliciousEvents', () => {
+    beforeEach(() => {
+      axios.get = jest.fn(() => Promise.resolve(response));
+    });
+    it('fetches the list of events from the backend', () => {
+      actions.fetchConfirmedMaliciousEvents(context, {viewKey: 'selectedPaneView'});
+      expect(axios.get).toHaveBeenCalledWith(`${window.requestPath}&ajax=true&action=fetch_confirmed_malicious_events`);
+    });
+    it('mutates the collection of events as well as the specified paneView', async () => {
+      expect.assertions(3);
+      actions.fetchConfirmedMaliciousEvents(context, {viewKey: 'selectedPaneView'});
+      await flushPromises;
+      expect(context.commit.mock.calls.length).toBe(2);
+      expect(context.commit.mock.calls[0]).toEqual(['updateEvents', {events}]);
+      expect(context.commit.mock.calls[1]).toEqual(['updatePaneView', {events, viewKey: 'selectedPaneView'}]);
     });
   });
   describe('fetchAssociatedMailboxEvents', () => {
