@@ -35,6 +35,9 @@ export default {
   panes(state) {
     return state.panes;
   },
+  paneViewEvents(state) {
+    return (paneViewKey) => state.events.filter((event) => state.paneViews[paneViewKey].includes(event.id));
+  },
   probablyMaliciousEvents(state) {
     return state.events.filter((event) => state.probablyMaliciousEventIds.includes(event.id));
   },

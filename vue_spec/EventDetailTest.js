@@ -28,7 +28,7 @@ describe('EventDetail', () => {
         },
       },
       only_for_tests: {
-        event_time: 'Sat Jun 22 2019 12:24:41 GMT+0200 (SAST)',
+        event_time: new Date(1561199081 * 1000).toLocaleString('default', {timeZoneName: 'short'}),
         type: 'Login',
         assessments_display: ['Confirmed Benign', 'Probably Benign', 'Probably Malicious', 'Confirmed Malicious'],
       },
@@ -42,7 +42,7 @@ describe('EventDetail', () => {
       },
     });
 
-    expect(wrapper.find('td[event-detail-item="event_time"]').text()).toBe('2019-06-22 12:24:41 GMT+2');
+    expect(wrapper.find('td[event-detail-item="event_time"]').text()).toBe(eventData.only_for_tests.event_time);
     expect(wrapper.find('td[event-detail-item="ip_ip_address"]').text()).toBe('10.0.0.1');
     expect(wrapper.find('td[event-detail-item="type"]').text()).toBe('Login');
     expect(wrapper.find('td[event-detail-item="ip_city"]').text()).toBe('Cape Town');

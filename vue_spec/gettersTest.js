@@ -1,6 +1,28 @@
 import getters from '../vue_src/getters';
 
 describe('getters', () => {
+  it('returns events that are referenced by the IDs in the specified view pane', () => {
+    const state = {
+      events: [
+        {id: '1A', latest_assessment: 'probably_malicious'},
+        {id: '1B', latest_assessment: 'probably_benign'},
+        {id: '1C', latest_assessment: 'probably_benign'},
+        {id: '1D', latest_assessment: 'probably_malicious'},
+        {id: '1E', latest_assessment: 'probably_malicious'},
+      ],
+      paneViews: {
+        specifiedEventIds: ['1A', '1D', '1E'],
+        otherEventIds: ['1B', '1C'],
+      },
+    };
+
+    const events = getters.paneViewEvents(state)('specifiedEventIds');
+    expect(events).toStrictEqual([
+      {id: '1A', latest_assessment: 'probably_malicious'},
+      {id: '1D', latest_assessment: 'probably_malicious'},
+      {id: '1E', latest_assessment: 'probably_malicious'},
+    ]);
+  });
   it('returns events that are in the list of probably malicious events', () => {
     const state = {
       events: [

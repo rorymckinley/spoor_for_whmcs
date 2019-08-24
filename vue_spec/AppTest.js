@@ -16,8 +16,18 @@ describe('And in the darkness bind them', () => {
   beforeEach(() => {
     testState = {
       panes: [
-        {id: 'foo', title: 'Foo', seedAction: ['fooAction', {some: 'options'}]},
-        {id: 'bar', title: 'Bar', seedAction: ['barAction', {more: 'options'}]},
+        {
+          id: 'foo',
+          title: 'Foo',
+          seedAction: ['fooAction', {some: 'options'}],
+          viewKey: 'fooKey',
+        },
+        {
+          id: 'bar',
+          title: 'Bar',
+          seedAction: ['barAction', {more: 'options'}],
+          viewKey: 'barKey',
+        },
       ],
       selectedPaneId: 'bar',
     };
@@ -53,10 +63,12 @@ describe('And in the darkness bind them', () => {
     expect(panes.at(0).props()).toStrictEqual({
       title: 'Foo',
       seedAction: ['fooAction', {some: 'options'}],
+      viewKey: 'fooKey',
     });
     expect(panes.at(1).props()).toStrictEqual({
       title: 'Bar',
       seedAction: ['barAction', {more: 'options'}],
+      viewKey: 'barKey',
     });
   });
 
@@ -79,15 +91,5 @@ describe('And in the darkness bind them', () => {
 
     const paneNavigations = wrapper.findAll(PaneNavigation);
     expect(paneNavigations).toHaveLength(1);
-  });
-
-  it('runs the seed actions for each of the panes on mounting', () => {
-    shallowMount(App, {
-      store,
-      localVue,
-    });
-
-    expect(mockDispatch).toHaveBeenCalledWith(...['fooAction', {some: 'options'}]);
-    expect(mockDispatch).toHaveBeenCalledWith(...['barAction', {more: 'options'}]);
   });
 });

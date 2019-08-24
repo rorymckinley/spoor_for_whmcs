@@ -4,10 +4,11 @@
       <PaneNavigation />
       <Pane
         v-for="pane in panes"
+        v-show="selectedPane(pane.id)"
+        :key="pane.title"
         :title="pane.title"
         :seed-action="pane.seedAction"
-        :key="pane.title"
-        v-show="selectedPane(pane.id)"
+        :view-key="pane.viewKey"
       />
     </div>
   </div>
@@ -25,11 +26,6 @@ export default {
     panes() {
       return this.$store.getters.panes;
     },
-  },
-  mounted() {
-    this.panes.forEach((pane) => {
-      this.$store.dispatch(...pane.seedAction);
-    });
   },
   methods: {
     selectedPane(paneId) {

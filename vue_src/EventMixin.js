@@ -11,13 +11,6 @@ export default {
     date() {
       const date = new Date(this.eventData.event_time * 1000);
       return date.toLocaleString('default', {
-        hour12: false,
-        month: '2-digit',
-        year: 'numeric',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
         timeZoneName: 'short',
       });
     },

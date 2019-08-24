@@ -11,7 +11,8 @@ localVue.use(Vuex);
 
 describe('A pane component', () => {
   let store;
-  const seedAction = ['aFunctionToSeedTheList'];
+  const seedAction = ['aFunctionToSeedTheList', {option: 'some value'}];
+  const viewKey = 'seedKey';
 
   beforeEach(() => {
     store = new Vuex.Store(
@@ -33,6 +34,22 @@ describe('A pane component', () => {
         },
       )
     );
+    store.dispatch = jest.fn();
+  });
+
+  it('calls the seedAction with any parameters when the Pane is mounted', () => {
+    shallowMount(Pane, {
+      propsData: {
+        title: 'Some crazy stuff',
+        seedAction,
+        viewKey,
+      },
+      store,
+      localVue,
+    });
+
+    expect(store.dispatch).toHaveBeenCalledTimes(1);
+    expect(store.dispatch).toHaveBeenCalledWith(seedAction[0], {option: 'some value', viewKey});
   });
 
   it('creates a event list instance', () => {
@@ -40,6 +57,7 @@ describe('A pane component', () => {
       propsData: {
         title: 'Some crazy stuff',
         seedAction,
+        viewKey,
       },
       store,
       localVue,
@@ -51,24 +69,26 @@ describe('A pane component', () => {
     expect(props).toEqual({
       title: 'Some crazy stuff',
       seedAction,
+      viewKey,
     });
   });
 
   describe('when a refresh is requested for the list of events', () => {
     it('triggers a call to the backend', () => {
-      store.dispatch = jest.fn();
       const wrapper = shallowMount(Pane, {
         propsData: {
           title: 'Some crazy stuff',
           seedAction,
+          viewKey,
         },
         store,
         localVue,
       });
+      expect(store.dispatch).toHaveBeenCalledTimes(1); // On mounting
 
       wrapper.find(EventList).vm.$emit('refresh-list');
-      expect(store.dispatch).toHaveBeenCalledTimes(1);
-      expect(store.dispatch).toHaveBeenCalledWith(...seedAction);
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
+      expect(store.dispatch.mock.calls[1]).toEqual([seedAction[0], {option: 'some value', viewKey}]);
     });
   });
 
@@ -77,6 +97,7 @@ describe('A pane component', () => {
       propsData: {
         title: 'Some crazy stuff',
         seedAction,
+        viewKey,
       },
       store,
       localVue,
@@ -90,6 +111,7 @@ describe('A pane component', () => {
       propsData: {
         title: 'Some crazy stuff',
         seedAction,
+        viewKey,
       },
       store,
       localVue,
@@ -104,6 +126,7 @@ describe('A pane component', () => {
         propsData: {
           title: 'Some crazy stuff',
           seedAction,
+          viewKey,
         },
         store,
         localVue,
@@ -119,6 +142,7 @@ describe('A pane component', () => {
         propsData: {
           title: 'Some crazy stuff',
           seedAction,
+          viewKey,
         },
         store,
         localVue,
@@ -135,6 +159,7 @@ describe('A pane component', () => {
         propsData: {
           title: 'Some crazy stuff',
           seedAction,
+          viewKey,
         },
         store,
         localVue,
@@ -147,19 +172,21 @@ describe('A pane component', () => {
 
   describe('when a mailbox event is updated', () => {
     it('triggers an update to the backend', () => {
-      store.dispatch = jest.fn();
       const wrapper = shallowMount(Pane, {
         propsData: {
           title: 'Some crazy stuff',
           seedAction,
+          viewKey,
         },
         store,
         localVue,
       });
+      expect(store.dispatch).toHaveBeenCalledTimes(1); // On mounting
+
       store.commit('setSelectedEventId', '1C');
 
       wrapper.find(EventDetail).vm.$emit('mailbox-event-update', '1C', {assessment: 'foo_bar_baz'});
-      expect(store.dispatch).toHaveBeenCalledTimes(1);
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(
         'updateMailboxEvent', {mailboxEventId: '1C', mailboxEvent: {assessment: 'foo_bar_baz'}}
       );
