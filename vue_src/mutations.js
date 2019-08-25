@@ -45,13 +45,14 @@ export default {
     }
   },
   updatePaneView(state, payload) {
-    Vue.set(state.paneViews, payload.viewKey, payload.events.map((event) => event.id))
+    Vue.set(state.paneViews, payload.viewKey, payload.events.map((event) => event.id));
   },
   updateProbablyMaliciousEventIds(state, payload) {
     state.probablyMaliciousEventIds = payload.events.map((event) => event.id);
   },
   setSelectedEventId(state, payload) {
-    Vue.set(state, 'selectedEventId', payload);
+    const pane = (state.panes.filter((pane) => pane.id === payload.paneId))[0];
+    Vue.set(pane, 'selectedEventId', payload.selectedEventId);
   },
   setSelectedPaneId(state, paneId) {
     Vue.set(state, 'selectedPaneId', paneId);

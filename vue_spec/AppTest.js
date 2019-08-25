@@ -64,11 +64,13 @@ describe('And in the darkness bind them', () => {
       title: 'Foo',
       seedAction: ['fooAction', {some: 'options'}],
       viewKey: 'fooKey',
+      id: 'foo',
     });
     expect(panes.at(1).props()).toStrictEqual({
       title: 'Bar',
       seedAction: ['barAction', {more: 'options'}],
       viewKey: 'barKey',
+      id: 'bar',
     });
   });
 

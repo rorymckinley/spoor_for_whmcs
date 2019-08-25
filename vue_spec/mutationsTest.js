@@ -18,6 +18,9 @@ describe('mutations', () => {
         fooEventIds: ['1A', '1D'],
         barEventIds: ['1D', '1E'],
       },
+      panes: [
+        {id: 'foo', selectedEventId: null},
+      ],
     };
   });
   afterEach(() => {
@@ -59,8 +62,8 @@ describe('mutations', () => {
     expect(state.probablyMaliciousEventIds).toEqual(['1C', '1F', '1G']);
   });
   it('sets which event is selected', () => {
-    mutations.setSelectedEventId(state, '1A');
-    expect(state.selectedEventId).toBe('1A');
+    mutations.setSelectedEventId(state, {paneId: 'foo', selectedEventId: '1A'});
+    expect(state.panes[0].selectedEventId).toBe('1A');
   });
   it('updates the set of IDs for events associated by mailbox address', () => {
     state = {

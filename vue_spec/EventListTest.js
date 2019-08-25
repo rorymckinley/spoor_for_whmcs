@@ -106,5 +106,23 @@ describe('Event list component', () => {
     wrapper.find('span#refresh_list').trigger('click');
     expect(wrapper.emitted('refresh-list')).toHaveLength(1);
   });
+
+  it('passes through an emitted `mailbox-event-selected` event', () => {
+    store.dispatch = stubbedDispatch;
+    const wrapper = shallowMount(EventList, {
+      propsData: {
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEventIds',
+      },
+      store,
+      localVue,
+    });
+    const events = wrapper.findAll(Event);
+
+    events.at(0).vm.$emit('mailbox-event-selected', '123ABC');
+    expect(wrapper.emitted('mailbox-event-selected')).toHaveLength(1);
+    expect(wrapper.emitted('mailbox-event-selected')[0]).toEqual(['123ABC']);
+  });
 });
 

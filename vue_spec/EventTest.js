@@ -92,7 +92,7 @@ describe('Event component', () => {
     expect(wrapper.findAll('tr td').at(1).text()).toBe('Forward Removed');
   });
 
-  it('sets the selectedEventId in the store if the table row is clicked on', () => {
+  it('emits an event when an event is clicked on', () => {
     store.dispatch = jest.fn();
     const wrapper = shallowMount(Event, {
       propsData: {
@@ -103,41 +103,7 @@ describe('Event component', () => {
     });
 
     wrapper.find('tr').trigger('click');
-    expect(store.getters.selectedEventId).toBe(eventData.id);
-  });
-
-  it('initialises the associated events structure for the selected event id', () => {
-    store.dispatch = jest.fn();
-    const wrapper = shallowMount(Event, {
-      propsData: {
-        eventData,
-      },
-      store,
-      localVue,
-    });
-
-    wrapper.find('tr').trigger('click');
-    expect(store.state.associatedEventIds).toStrictEqual({
-      '123ABC': {
-        byForwardRecipient: [],
-        byIpAddress: [],
-        byMailboxAddress: [],
-      },
-    });
-  });
-
-  it('asks the store to fetch events associated with the event that was selected', () => {
-    store.dispatch = jest.fn();
-    const wrapper = shallowMount(Event, {
-      propsData: {
-        eventData,
-      },
-      store,
-      localVue,
-    });
-
-    wrapper.find('tr').trigger('click');
-    expect(store.dispatch).toHaveBeenCalledTimes(1);
-    expect(store.dispatch).toHaveBeenCalledWith('fetchAssociatedMailboxEvents', eventData.id);
+    expect(wrapper.emitted('mailbox-event-selected')).toHaveLength(1);
+    expect(wrapper.emitted('mailbox-event-selected')[0]).toEqual(['123ABC']);
   });
 });

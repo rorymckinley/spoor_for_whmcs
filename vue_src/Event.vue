@@ -19,9 +19,7 @@ export default {
   },
   methods: {
     eventDetailRequired(mailboxEventId) {
-      this.$store.commit('setSelectedEventId', mailboxEventId);
-      this.$store.commit('initialiseAssociatedEventIds', {mailboxEventId});
-      this.$store.dispatch('fetchAssociatedMailboxEvents', mailboxEventId);
+      this.$emit('mailbox-event-selected', mailboxEventId);
     },
   },
 };
