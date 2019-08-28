@@ -1,7 +1,6 @@
 export default {
   events: [],
   probablyMaliciousEventIds: [],
-  selectedEventId: null,
   associatedEventIds: {
   },
   panes: [
@@ -10,12 +9,14 @@ export default {
       title: 'Probably Malicious',
       seedAction: ['fetchProbablyMaliciousEvents', {}],
       viewKey: 'probablyMaliciousEventIds',
+      selectedEventId: null,
     },
     {
       id: 'confirmed_malicious',
       title: 'Confirmed Malicious',
       seedAction: ['fetchConfirmedMaliciousEvents', {}],
       viewKey: 'confirmedMaliciousEventIds',
+      selectedEventId: null,
     },
   ],
   paneViews: {

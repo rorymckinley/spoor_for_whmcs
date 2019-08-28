@@ -1,36 +1,45 @@
 export default {
-  eventsAssociatedByForwardRecipient(state, getters) {
-    if (!getters.selectedEventId) {
-      return [];
-    }
-    const selected = getters.selectedEventId;
-    if (!state.associatedEventIds[selected] || !state.associatedEventIds[selected].byForwardRecipient) {
-      return [];
-    } else {
-      return state.events.filter((event) => state.associatedEventIds[selected].byForwardRecipient.includes(event.id));
-    }
+  eventsAssociatedByForwardRecipient(state) {
+    return (selectedMailboxEventId) => {
+      if (
+        !state.associatedEventIds[selectedMailboxEventId] ||
+        !state.associatedEventIds[selectedMailboxEventId].byForwardRecipient
+      ) {
+        return [];
+      } else {
+        return state.events.filter((event) => {
+          return state.associatedEventIds[selectedMailboxEventId].byForwardRecipient.includes(event.id);
+        });
+      }
+    };
   },
-  eventsAssociatedByIpAddress(state, getters) {
-    if (!getters.selectedEventId) {
-      return [];
-    }
-    const selected = getters.selectedEventId;
-    if (!state.associatedEventIds[selected] || !state.associatedEventIds[selected].byIpAddress) {
-      return [];
-    } else {
-      return state.events.filter((event) => state.associatedEventIds[selected].byIpAddress.includes(event.id));
-    }
+  eventsAssociatedByIpAddress(state) {
+    return (selectedMailboxEventId) => {
+      if (
+        !state.associatedEventIds[selectedMailboxEventId] ||
+        !state.associatedEventIds[selectedMailboxEventId].byIpAddress
+      ) {
+        return [];
+      } else {
+        return state.events.filter((event) => {
+          return state.associatedEventIds[selectedMailboxEventId].byIpAddress.includes(event.id);
+        });
+      }
+    };
   },
-  eventsAssociatedByMailbox(state, getters) {
-    if (!getters.selectedEventId) {
-      return [];
-    }
-    const selected = getters.selectedEventId;
-    if (!state.associatedEventIds[selected] || !state.associatedEventIds[selected].byMailboxAddress) {
-      return [];
-    } else {
-      return state.events.filter((event) => state.associatedEventIds[selected].byMailboxAddress.includes(event.id));
-    }
+  eventsAssociatedByMailbox(state) {
+    return (selectedMailboxEventId) => {
+      if (
+        !state.associatedEventIds[selectedMailboxEventId] ||
+        !state.associatedEventIds[selectedMailboxEventId].byMailboxAddress
+      ) {
+        return [];
+      } else {
+        return state.events.filter((event) => {
+          return state.associatedEventIds[selectedMailboxEventId].byMailboxAddress.includes(event.id);
+        });
+      }
+    };
   },
   panes(state) {
     return state.panes;
@@ -42,14 +51,20 @@ export default {
     return state.events.filter((event) => state.probablyMaliciousEventIds.includes(event.id));
   },
   selectedEventId(state) {
-    return state.selectedEventId;
+    return (paneId) => {
+      const pane = state.panes.filter((pane) => pane.id == paneId)[0];
+      return pane.selectedEventId;
+    };
   },
   selectedEventData(state, getters) {
-    if (!getters.selectedEventId) {
-      return {};
-    } else {
-      return state.events.find((event) => event.id === getters.selectedEventId);
-    }
+    return (paneId) => {
+      const selectedEventId = getters.selectedEventId(paneId);
+      if (!selectedEventId) {
+        return {};
+      } else {
+        return state.events.find((event) => event.id === selectedEventId);
+      }
+    };
   },
   selectedPaneId(state) {
     return state.selectedPaneId;

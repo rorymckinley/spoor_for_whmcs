@@ -43,11 +43,15 @@ describe('getters', () => {
   });
   it('returns the id of the selected event', () => {
     const state = {
-      selectedEventId: '1C',
+      panes: [
+        {id: 'foo', selectedEventId: '1C'},
+        {id: 'bar', selectedEventId: '1E'},
+      ],
     };
-    expect(getters.selectedEventId(state)).toBe('1C');
+    expect(getters.selectedEventId(state)('foo')).toBe('1C');
   });
   describe('selectedEventData', () => {
+    const paneId = 'foo';
     it('returns the data for the selected event', () => {
       const state = {
         events: [
@@ -57,160 +61,153 @@ describe('getters', () => {
           {id: '1D', latest_assessment: 'probably_malicious'},
           {id: '1E', latest_assessment: 'probably_malicious'},
         ],
-        selectedEventId: '1C',
+        panes: [
+          {id: 'foo', selectedEventId: '1C'},
+          {id: 'bar', selectedEventId: '1E'},
+        ],
       };
-      getters.selectedEventId = '1C';
+      const mockGetters = {
+        selectedEventId: (paneId) => {
+          let id = null;
+          if (paneId === 'foo') {
+            id = state.panes[0].selectedEventId;
+          }
+          return id;
+        },
+      };
 
-      expect(getters.selectedEventData(state, {selectedEventId: '1C'})).toStrictEqual(
+      expect(getters.selectedEventData(state, mockGetters)(paneId)).toStrictEqual(
         {id: '1C', latest_assessment: 'probably_benign'}
       );
     });
     it('returns an empty object if there is no selected event', () => {
-      expect(getters.selectedEventData({}, {})).toStrictEqual({});
-      expect(getters.selectedEventData({}, {selectedEventId: null})).toStrictEqual({});
+      expect(getters.selectedEventData({}, {selectedEventId: () => undefined})(paneId)).toStrictEqual({});
+      expect(getters.selectedEventData({}, {selectedEventId: () => null})(paneId)).toStrictEqual({});
     });
   });
   describe('eventsAssociatedByMailbox', () =>{
-    it('returns the events that are associated by mailbox address to the currently selected event', () => {
-      const state = {
-        events: [
-          {id: '1A', latest_assessment: 'probably_malicious'},
-          {id: '1B', latest_assessment: 'probably_benign'},
-          {id: '1C', latest_assessment: 'probably_benign'},
-          {id: '1D', latest_assessment: 'probably_malicious'},
-          {id: '1E', latest_assessment: 'probably_malicious'},
-          {id: '1F', latest_assessment: 'confirmed_malicious'},
-          {id: '1G', latest_assessment: 'confirmed_malicious'},
-          {id: '1H', latest_assessment: 'confirmed_malicious'},
-        ],
-        associatedEventIds: {
-          '1C': {
-            byMailboxAddress: ['1A', '1B'],
-            byIpAddress: ['1D', '1E'],
-            byForwardRecipient: ['1F', '1G'],
-          },
-          '1D': {
-            byMailboxAddress: ['1G', '1H'],
-            byIpAddress: ['1A', '1B'],
-            byForwardRecipient: ['1C', '1G'],
-          },
+    const state = {
+      events: [
+        {id: '1A', latest_assessment: 'probably_malicious'},
+        {id: '1B', latest_assessment: 'probably_benign'},
+        {id: '1C', latest_assessment: 'probably_benign'},
+        {id: '1D', latest_assessment: 'probably_malicious'},
+        {id: '1E', latest_assessment: 'probably_malicious'},
+        {id: '1F', latest_assessment: 'confirmed_malicious'},
+        {id: '1G', latest_assessment: 'confirmed_malicious'},
+        {id: '1H', latest_assessment: 'confirmed_malicious'},
+      ],
+      associatedEventIds: {
+        '1C': {
+          byMailboxAddress: ['1A', '1B'],
+          byIpAddress: ['1D', '1E'],
+          byForwardRecipient: ['1F', '1G'],
         },
-        selectedEventId: '1C',
-      };
-      // TODO: This bleeds out implementation - find a better way when you have the luxury of time
-      getters.selectedEventId = '1C';
+        '1D': {
+          byMailboxAddress: ['1G', '1H'],
+          byIpAddress: ['1A', '1B'],
+          byForwardRecipient: ['1C', '1G'],
+        },
+      },
+    };
 
-      expect(getters.eventsAssociatedByMailbox(state, getters)).toStrictEqual([
+    it('returns the events that are associated by mailbox address to the currently selected event', () => {
+      expect(getters.eventsAssociatedByMailbox(state)('1C')).toStrictEqual([
         {id: '1A', latest_assessment: 'probably_malicious'},
         {id: '1B', latest_assessment: 'probably_benign'},
       ]);
     });
     it('returns an empty array if the associated event ids structure is not properly set up', () => {
-      getters.selectedEventId = '1C';
-      expect(getters.eventsAssociatedByMailbox({events: [{}], associatedEventIds: {}}, getters)).toEqual([]);
-      expect(getters.eventsAssociatedByMailbox({events: [{}], associatedEventIds: {'1C': {}}}, getters)).toEqual([]);
+      expect(getters.eventsAssociatedByMailbox({events: [{}], associatedEventIds: {}})('1C')).toEqual([]);
+      expect(getters.eventsAssociatedByMailbox({events: [{}], associatedEventIds: {'1C': {}}})('1C')).toEqual([]);
     });
     it('returns an empty array if there is no event selected', () => {
-      getters.selectedEventId = null;
-      expect(getters.eventsAssociatedByMailbox({associatedEventIds: {}, events: [{}]}, getters)).toEqual([]);
-      getters.selectedEventId = undefined;
-      expect(getters.eventsAssociatedByMailbox({associatedEventIds: {}, events: [{}]}, getters)).toEqual([]);
+      expect(getters.eventsAssociatedByMailbox(state)(null)).toEqual([]);
+      expect(getters.eventsAssociatedByMailbox(state)(undefined)).toEqual([]);
     });
   });
   describe('eventsAssociatedByIpAddress', () =>{
-    it('returns the events that are associated by ip address to the currently selected event', () => {
-      const state = {
-        events: [
-          {id: '1A', latest_assessment: 'probably_malicious'},
-          {id: '1B', latest_assessment: 'probably_benign'},
-          {id: '1C', latest_assessment: 'probably_benign'},
-          {id: '1D', latest_assessment: 'probably_malicious'},
-          {id: '1E', latest_assessment: 'probably_malicious'},
-          {id: '1F', latest_assessment: 'confirmed_malicious'},
-          {id: '1G', latest_assessment: 'confirmed_malicious'},
-          {id: '1H', latest_assessment: 'confirmed_malicious'},
-        ],
-        associatedEventIds: {
-          '1C': {
-            byMailboxAddress: ['1A', '1B'],
-            byIpAddress: ['1D', '1E'],
-            byForwardRecipient: ['1F', '1G'],
-          },
-          '1D': {
-            byMailboxAddress: ['1G', '1H'],
-            byIpAddress: ['1A', '1B'],
-            byForwardRecipient: ['1C', '1G'],
-          },
+    const state = {
+      events: [
+        {id: '1A', latest_assessment: 'probably_malicious'},
+        {id: '1B', latest_assessment: 'probably_benign'},
+        {id: '1C', latest_assessment: 'probably_benign'},
+        {id: '1D', latest_assessment: 'probably_malicious'},
+        {id: '1E', latest_assessment: 'probably_malicious'},
+        {id: '1F', latest_assessment: 'confirmed_malicious'},
+        {id: '1G', latest_assessment: 'confirmed_malicious'},
+        {id: '1H', latest_assessment: 'confirmed_malicious'},
+      ],
+      associatedEventIds: {
+        '1C': {
+          byMailboxAddress: ['1A', '1B'],
+          byIpAddress: ['1D', '1E'],
+          byForwardRecipient: ['1F', '1G'],
         },
-        selectedEventId: '1C',
-      };
-      // TODO: This bleeds out implementation - find a better way when you have the luxury of time
-      getters.selectedEventId = '1C';
+        '1D': {
+          byMailboxAddress: ['1G', '1H'],
+          byIpAddress: ['1A', '1B'],
+          byForwardRecipient: ['1C', '1G'],
+        },
+      },
+    };
 
-      expect(getters.eventsAssociatedByIpAddress(state, getters)).toStrictEqual([
+    it('returns the events that are associated by ip address to the currently selected event', () => {
+      expect(getters.eventsAssociatedByIpAddress(state)('1C')).toStrictEqual([
         {id: '1D', latest_assessment: 'probably_malicious'},
         {id: '1E', latest_assessment: 'probably_malicious'},
       ]);
     });
     it('returns an empty array if the associated event ids structure is not propperly set up', () => {
-      getters.selectedEventId = '1C';
-      expect(getters.eventsAssociatedByIpAddress({events: [{}], associatedEventIds: {}}, getters)).toEqual([]);
-      expect(getters.eventsAssociatedByIpAddress({events: [{}], associatedEventIds: {'1C': {}}}, getters)).toEqual([]);
+      expect(getters.eventsAssociatedByIpAddress({events: [{}], associatedEventIds: {}})('1C')).toEqual([]);
+      expect(getters.eventsAssociatedByIpAddress({events: [{}], associatedEventIds: {'1C': {}}})('1C')).toEqual([]);
     });
     it('returns an empty array if there is no event selected', () => {
-      getters.selectedEventId = null;
-      expect(getters.eventsAssociatedByIpAddress({associatedEventIds: {}, events: [{}]}, getters)).toEqual([]);
-      getters.selectedEventId = undefined;
-      expect(getters.eventsAssociatedByIpAddress({associatedEventIds: {}, events: [{}]}, getters)).toEqual([]);
+      expect(getters.eventsAssociatedByIpAddress(state)(null)).toEqual([]);
+      expect(getters.eventsAssociatedByIpAddress(state)(undefined)).toEqual([]);
     });
   });
   describe('eventsAssociatedByForwardRecipient', () =>{
-    it('returns the events that are associated by forward recipient to the currently selected event', () => {
-      const state = {
-        events: [
-          {id: '1A', latest_assessment: 'probably_malicious'},
-          {id: '1B', latest_assessment: 'probably_benign'},
-          {id: '1C', latest_assessment: 'probably_benign'},
-          {id: '1D', latest_assessment: 'probably_malicious'},
-          {id: '1E', latest_assessment: 'probably_malicious'},
-          {id: '1F', latest_assessment: 'confirmed_malicious'},
-          {id: '1G', latest_assessment: 'confirmed_malicious'},
-          {id: '1H', latest_assessment: 'confirmed_malicious'},
-        ],
-        associatedEventIds: {
-          '1C': {
-            byMailboxAddress: ['1A', '1B'],
-            byIpAddress: ['1D', '1E'],
-            byForwardRecipient: ['1F', '1G'],
-          },
-          '1D': {
-            byMailboxAddress: ['1G', '1H'],
-            byIpAddress: ['1A', '1B'],
-            byForwardRecipient: ['1C', '1G'],
-          },
+    const state = {
+      events: [
+        {id: '1A', latest_assessment: 'probably_malicious'},
+        {id: '1B', latest_assessment: 'probably_benign'},
+        {id: '1C', latest_assessment: 'probably_benign'},
+        {id: '1D', latest_assessment: 'probably_malicious'},
+        {id: '1E', latest_assessment: 'probably_malicious'},
+        {id: '1F', latest_assessment: 'confirmed_malicious'},
+        {id: '1G', latest_assessment: 'confirmed_malicious'},
+        {id: '1H', latest_assessment: 'confirmed_malicious'},
+      ],
+      associatedEventIds: {
+        '1C': {
+          byMailboxAddress: ['1A', '1B'],
+          byIpAddress: ['1D', '1E'],
+          byForwardRecipient: ['1F', '1G'],
         },
-        selectedEventId: '1C',
-      };
-      // TODO: This bleeds out implementation - find a better way when you have the luxury of time
-      getters.selectedEventId = '1C';
+        '1D': {
+          byMailboxAddress: ['1G', '1H'],
+          byIpAddress: ['1A', '1B'],
+          byForwardRecipient: ['1C', '1G'],
+        },
+      },
+    };
 
-      expect(getters.eventsAssociatedByForwardRecipient(state, getters)).toStrictEqual([
+    it('returns the events that are associated by forward recipient to the currently selected event', () => {
+      expect(getters.eventsAssociatedByForwardRecipient(state)('1C')).toStrictEqual([
         {id: '1F', latest_assessment: 'confirmed_malicious'},
         {id: '1G', latest_assessment: 'confirmed_malicious'},
       ]);
     });
     it('returns an empty array if the associated event ids structure is not propperly set up', () => {
-      getters.selectedEventId = '1C';
-      expect(getters.eventsAssociatedByForwardRecipient({events: [{}], associatedEventIds: {}}, getters)).toEqual([]);
+      expect(getters.eventsAssociatedByForwardRecipient({events: [{}], associatedEventIds: {}})('1C')).toEqual([]);
       expect(
-        getters.eventsAssociatedByForwardRecipient({events: [{}], associatedEventIds: {'1C': {}}}, getters)
+        getters.eventsAssociatedByForwardRecipient({events: [{}], associatedEventIds: {'1C': {}}})('1C')
       ).toEqual([]);
     });
     it('returns an empty array if there is no event selected', () => {
-      getters.selectedEventId = null;
-      expect(getters.eventsAssociatedByForwardRecipient({associatedEventIds: {}, events: [{}]}, getters)).toEqual([]);
-      getters.selectedEventId = undefined;
-      expect(getters.eventsAssociatedByForwardRecipient({associatedEventIds: {}, events: [{}]}, getters)).toEqual([]);
+      expect(getters.eventsAssociatedByForwardRecipient(state)(null)).toEqual([]);
+      expect(getters.eventsAssociatedByForwardRecipient(state)(undefined)).toEqual([]);
     });
   });
   describe('panes', () => {

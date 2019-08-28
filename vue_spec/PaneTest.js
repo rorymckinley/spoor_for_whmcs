@@ -13,6 +13,8 @@ describe('A pane component', () => {
   let store;
   const seedAction = ['aFunctionToSeedTheList', {option: 'some value'}];
   const viewKey = 'seedKey';
+  const paneId = 'foo';
+  const selectedEventId = '1C';
 
   beforeEach(() => {
     store = new Vuex.Store(
@@ -21,6 +23,8 @@ describe('A pane component', () => {
         storeConfig,
         {
           state: {
+            associatedEventIds: {
+            },
             events: [
               {id: '1A', latest_assessment: 'probably_malicious'},
               {id: '1B', latest_assessment: 'probably_benign'},
@@ -29,7 +33,10 @@ describe('A pane component', () => {
               {id: '1E', latest_assessment: 'probably_malicious'},
             ],
             probablyMaliciousEventIds: ['1A', '1D', '1E'],
-            selectedEventId: null,
+            panes: [
+              {id: 'foo', selectedEventId: null},
+              {id: 'bar', selectedEventId: null},
+            ],
           },
         },
       )
@@ -43,6 +50,7 @@ describe('A pane component', () => {
         title: 'Some crazy stuff',
         seedAction,
         viewKey,
+        id: paneId,
       },
       store,
       localVue,
@@ -58,6 +66,7 @@ describe('A pane component', () => {
         title: 'Some crazy stuff',
         seedAction,
         viewKey,
+        id: paneId,
       },
       store,
       localVue,
@@ -80,6 +89,7 @@ describe('A pane component', () => {
           title: 'Some crazy stuff',
           seedAction,
           viewKey,
+          id: paneId,
         },
         store,
         localVue,
@@ -98,6 +108,7 @@ describe('A pane component', () => {
         title: 'Some crazy stuff',
         seedAction,
         viewKey,
+        id: paneId,
       },
       store,
       localVue,
@@ -112,12 +123,76 @@ describe('A pane component', () => {
         title: 'Some crazy stuff',
         seedAction,
         viewKey,
+        id: paneId,
       },
       store,
       localVue,
     });
 
     expect(wrapper.findAll(AssociatedEventsContainer)).toHaveLength(0);
+  });
+
+  describe('the EventList emits a `mailbox-event-selected` event', () => {
+    it('sets the selectedEventId when the EventList emits a `mailbox-event-selected` event', () =>{
+      const wrapper = shallowMount(Pane, {
+        propsData: {
+          title: 'Some crazy stuff',
+          seedAction,
+          viewKey,
+          id: paneId,
+        },
+        store,
+        localVue,
+      });
+
+      const eventList = wrapper.find(EventList);
+      eventList.vm.$emit('mailbox-event-selected', '123ABC');
+      expect(store.getters.selectedEventId(paneId)).toEqual('123ABC');
+    });
+
+    it('initialises the associated events structure for the selected event id', () => {
+      const wrapper = shallowMount(Pane, {
+        propsData: {
+          title: 'Some crazy stuff',
+          seedAction,
+          viewKey,
+          id: paneId,
+        },
+        store,
+        localVue,
+      });
+
+      const eventList = wrapper.find(EventList);
+      eventList.vm.$emit('mailbox-event-selected', '123ABC');
+
+      expect(store.state.associatedEventIds).toStrictEqual({
+        '123ABC': {
+          byForwardRecipient: [],
+          byIpAddress: [],
+          byMailboxAddress: [],
+        },
+      });
+    });
+
+    it('asks the store to fetch events associated with the event that was selected', () => {
+      const wrapper = shallowMount(Pane, {
+        propsData: {
+          title: 'Some crazy stuff',
+          seedAction,
+          viewKey,
+          id: paneId,
+        },
+        store,
+        localVue,
+      });
+      expect(store.dispatch).toHaveBeenCalledTimes(1); // On mounting
+
+      const eventList = wrapper.find(EventList);
+      eventList.vm.$emit('mailbox-event-selected', '123ABC');
+
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
+      expect(store.dispatch).toHaveBeenCalledWith('fetchAssociatedMailboxEvents', '123ABC');
+    });
   });
 
   describe('when an event is selected', () => {
@@ -127,27 +202,29 @@ describe('A pane component', () => {
           title: 'Some crazy stuff',
           seedAction,
           viewKey,
+          id: paneId,
         },
         store,
         localVue,
       });
-      store.commit('setSelectedEventId', '1C');
+      store.commit('setSelectedEventId', {paneId, selectedEventId});
 
       expect(wrapper.findAll(EventDetail)).toHaveLength(1);
     });
 
     test('it passes the detail for the selected event to the detail component', () => {
-      const eventData = store.state.events.find((event) => event.id === '1C');
+      const eventData = store.state.events.find((event) => event.id === selectedEventId);
       const wrapper = shallowMount(Pane, {
         propsData: {
           title: 'Some crazy stuff',
           seedAction,
           viewKey,
+          id: paneId,
         },
         store,
         localVue,
       });
-      store.commit('setSelectedEventId', '1C');
+      store.commit('setSelectedEventId', {paneId, selectedEventId});
 
       expect(wrapper.find(EventDetail).props()).toStrictEqual({
         eventData,
@@ -160,13 +237,19 @@ describe('A pane component', () => {
           title: 'Some crazy stuff',
           seedAction,
           viewKey,
+          id: paneId,
         },
         store,
         localVue,
       });
-      store.commit('setSelectedEventId', '1C');
+      store.commit('setSelectedEventId', {paneId, selectedEventId});
 
       expect(wrapper.findAll(AssociatedEventsContainer)).toHaveLength(1);
+      const container = wrapper.find(AssociatedEventsContainer);
+      expect(container.props()).toStrictEqual({
+        selectedEventId,
+        prefix: paneId,
+      });
     });
   });
 
@@ -177,13 +260,14 @@ describe('A pane component', () => {
           title: 'Some crazy stuff',
           seedAction,
           viewKey,
+          id: paneId,
         },
         store,
         localVue,
       });
       expect(store.dispatch).toHaveBeenCalledTimes(1); // On mounting
 
-      store.commit('setSelectedEventId', '1C');
+      store.commit('setSelectedEventId', {paneId, selectedEventId});
 
       wrapper.find(EventDetail).vm.$emit('mailbox-event-update', '1C', {assessment: 'foo_bar_baz'});
       expect(store.dispatch).toHaveBeenCalledTimes(2);

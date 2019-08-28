@@ -33,6 +33,7 @@
         v-for="event in events"
         :key="event.id"
         :event-data="event"
+        @mailbox-event-selected="passthroughSelectedEvent"
       />
     </table>
   </div>
@@ -66,6 +67,9 @@ export default {
   methods: {
     refreshList() {
       this.$emit('refresh-list');
+    },
+    passthroughSelectedEvent(selectedEventId) {
+      this.$emit('mailbox-event-selected', selectedEventId);
     },
   },
 };

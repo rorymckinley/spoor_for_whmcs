@@ -5,13 +5,18 @@
       :seed-action="seedAction"
       :view-key="viewKey"
       @refresh-list="refreshList"
+      @mailbox-event-selected="setSelectedEventId"
     />
     <EventDetail
       v-if="eventSelected"
       :event-data="selectedEventData"
       @mailbox-event-update="updateMailboxEvent"
     />
-    <AssociatedEventsContainer v-if="eventSelected" />
+    <AssociatedEventsContainer
+      v-if="eventSelected"
+      :prefix="id"
+      :selected-event-id="eventSelected"
+    />
   </div>
 </template>
 
@@ -26,6 +31,10 @@ export default {
     EventList,
   },
   props: {
+    id: {
+      type: String,
+      required: true,
+    },
     seedAction: {
       type: Array,
       default: () => [],
@@ -41,10 +50,10 @@ export default {
   },
   computed: {
     selectedEventData() {
-      return this.$store.getters.selectedEventData;
+      return this.$store.getters.selectedEventData(this.id);
     },
     eventSelected() {
-      return this.$store.getters.selectedEventId;
+      return this.$store.getters.selectedEventId(this.id);
     },
   },
   mounted() {
@@ -63,6 +72,11 @@ export default {
     seedData() {
       const [action, options] = this.seedAction;
       this.$store.dispatch(action, Object.assign({}, options, {viewKey: this.viewKey}));
+    },
+    setSelectedEventId(selectedEventId) {
+      this.$store.commit('setSelectedEventId', {paneId: this.id, selectedEventId});
+      this.$store.commit('initialiseAssociatedEventIds', {mailboxEventId: selectedEventId});
+      this.$store.dispatch('fetchAssociatedMailboxEvents', selectedEventId);
     },
   },
 };

@@ -9,6 +9,7 @@ localVue.use(Vuex);
 
 describe('AssociatedEventsListing', () => {
   let store;
+  const prefix = 'foo';
   beforeEach(() => {
     store = new Vuex.Store(
       Object.assign(
@@ -38,7 +39,6 @@ describe('AssociatedEventsListing', () => {
                 byForwardRecipient: ['1C', '1G'],
               },
             },
-            selectedEventId: '1C',
           },
         },
       )
@@ -50,6 +50,10 @@ describe('AssociatedEventsListing', () => {
       AssociatedEventsContainer, {
         store,
         localVue,
+        propsData: {
+          selectedEventId: '1C',
+          prefix: prefix,
+        },
       }
     );
 
@@ -64,12 +68,16 @@ describe('AssociatedEventsListing', () => {
         AssociatedEventsContainer, {
           store,
           localVue,
+          propsData: {
+            selectedEventId: '1C',
+            prefix: prefix,
+          },
         }
       );
       associatedByMailbox = wrapper.findAll(AssociatedEventListing).at(0);
     });
     it('passes through a id component used to name internal elements', () =>{
-      expect(associatedByMailbox.props().idComponent).toBe('associated_by_mailbox');
+      expect(associatedByMailbox.props().idComponent).toBe(`${prefix}_associated_by_mailbox`);
     });
 
     it('passes through a tite for display', () => {
@@ -92,12 +100,16 @@ describe('AssociatedEventsListing', () => {
         AssociatedEventsContainer, {
           store,
           localVue,
+          propsData: {
+            selectedEventId: '1C',
+            prefix: prefix,
+          },
         }
       );
       associatedByIP = wrapper.findAll(AssociatedEventListing).at(1);
     });
     it('passes through a id component used to name internal elements', () =>{
-      expect(associatedByIP.props().idComponent).toBe('associated_by_ip');
+      expect(associatedByIP.props().idComponent).toBe(`${prefix}_associated_by_ip`);
     });
 
     it('passes through a tite for display', () => {
@@ -120,12 +132,16 @@ describe('AssociatedEventsListing', () => {
         AssociatedEventsContainer, {
           store,
           localVue,
+          propsData: {
+            selectedEventId: '1C',
+            prefix: prefix,
+          },
         }
       );
       associatedByForwardRecipient = wrapper.findAll(AssociatedEventListing).at(2);
     });
     it('passes through a id component used to name internal elements', () =>{
-      expect(associatedByForwardRecipient.props().idComponent).toBe('associated_by_forward_recipient');
+      expect(associatedByForwardRecipient.props().idComponent).toBe(`${prefix}_associated_by_forward_recipient`);
     });
 
     it('passes through a tite for display', () => {

@@ -5,7 +5,8 @@
       <Pane
         v-for="pane in panes"
         v-show="selectedPane(pane.id)"
-        :key="pane.title"
+        :id="pane.id"
+        :key="pane.id"
         :title="pane.title"
         :seed-action="pane.seedAction"
         :view-key="pane.viewKey"
