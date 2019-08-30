@@ -1,5 +1,8 @@
 <template>
-  <tr @click="eventDetailRequired(eventData.id)">
+  <tr
+    class="spoor-clickable spoor-highlight-row"
+    @click="eventDetailRequired(eventData.id)"
+  >
     <td>{{ date }}</td>
     <td>{{ type }}</td>
     <td>{{ eventData.mailbox_address }}</td>

@@ -9,7 +9,7 @@
     <td>{{ eventData.forward_recipient }}</td>
     <td>
       <span
-        class="glyphicon glyphicon-warning-sign"
+        class="glyphicon glyphicon-warning-sign spoor-clickable"
         spoor-control="setToProbablyMalicious"
         @click="setToProbablyMalicious"
         v-if="displayAssessmentControls()"

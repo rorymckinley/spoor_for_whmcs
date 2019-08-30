@@ -1,15 +1,19 @@
 <template>
-  <ul>
-    <li
-      v-for="pane in panes"
-      :key="pane.id"
-      role="presentation"
-      :class="selectedPane(pane.id) ? 'active' : ''"
-      @click="selectPane(pane.id)"
-    >
-      {{ pane.title }}
-    </li>
-  </ul>
+  <nav>
+    <ul class="nav nav-tabs">
+      <li
+        v-for="pane in panes"
+        :key="pane.id"
+        role="presentation"
+        :class="selectedPane(pane.id) ? 'active' : ''"
+        @click="selectPane(pane.id)"
+      >
+        <a>
+          {{ pane.title }}
+        </a>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script>
