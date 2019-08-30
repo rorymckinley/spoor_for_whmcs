@@ -57,7 +57,11 @@ export default {
       )
       .then((response) => {
         context.commit('updateEvents', {events: [response.data.mailbox_event]});
-        context.dispatch('fetchProbablyMaliciousEvents');
+        console.log(context.getters.panes);
+        for (const pane of context.getters.panes) {
+          const [action, options] = pane.seedAction;
+          context.dispatch(action, Object.assign({}, options, {viewKey: pane.viewKey}));
+        }
       });
   },
 };

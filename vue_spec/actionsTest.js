@@ -16,6 +16,9 @@ const events = [
 
 const context = {
   commit: jest.fn(),
+  getters: {
+    panes: [],
+  },
 };
 
 describe('actions', () => {
@@ -178,16 +181,23 @@ describe('actions', () => {
       );
     });
 
-    it('updates the probably malicious event ids', async () => {
-      expect.assertions(2);
+    it.only('updates the panes', async () => {
+      expect.assertions(3);
+
+      context.getters.panes = [
+        {seedAction: ['foo', {f: 'oo'}], viewKey: 'fooKey'},
+        {seedAction: ['bar', {b: 'ar'}], viewKey: 'barKey'},
+      ];
+
       actions.updateMailboxEvent(context, {
         mailboxEventId: '1C', mailboxEvent: {assessment: 'foo_bar_baz'},
       });
 
       await flushPromises;
 
-      expect(context.dispatch).toHaveBeenCalledTimes(1);
-      expect(context.dispatch).toHaveBeenCalledWith('fetchProbablyMaliciousEvents');
+      expect(context.dispatch).toHaveBeenCalledTimes(2);
+      expect(context.dispatch).toHaveBeenCalledWith('foo', {f: 'oo', viewKey: 'fooKey'});
+      expect(context.dispatch).toHaveBeenCalledWith('bar', {b: 'ar', viewKey: 'barKey'});
     });
   });
 });

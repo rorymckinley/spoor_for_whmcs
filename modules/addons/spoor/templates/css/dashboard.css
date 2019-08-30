@@ -18,3 +18,11 @@
   height: 100%;
   width: 100%;
 }
+
+.spoor-clickable {
+  cursor: pointer;
+}
+
+.spoor-highlight-row:hover {
+  background: #c7c4bd;
+}
