@@ -55,7 +55,7 @@ export default {
     },
     panelId() {
       return this.prefixId('associated_events');
-    }
+    },
   },
   methods: {
     prefixId(id) {

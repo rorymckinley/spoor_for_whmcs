@@ -10,7 +10,7 @@ export default {
     },
     date() {
       const date = new Date(this.eventData.event_time * 1000);
-      return date.toLocaleString('default', {
+      return date.toLocaleString(spoorLocalisation, {
         timeZoneName: 'short',
       });
     },

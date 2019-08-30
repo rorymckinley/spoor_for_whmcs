@@ -2,6 +2,7 @@
   var moduleLink = '{$modulelink}';
   var authenticityToken = {$authenticityToken};
   const requestPath = whmcsBaseUrl + adminBaseRoutePath + '/' + moduleLink;
+  const spoorLocalisation = '{$spoorLocalisation}';
 </script>
 <link rel="stylesheet" type="text/css" href='../modules/addons/spoor/templates/css/dashboard.css'>
 <div id="app"><div>

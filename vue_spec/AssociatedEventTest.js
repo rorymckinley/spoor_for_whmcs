@@ -1,3 +1,5 @@
+window.spoorLocalisation = 'en-us';
+
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import AssociatedEvent from '../vue_src/AssociatedEvent';
 import Vuex from 'vuex';
