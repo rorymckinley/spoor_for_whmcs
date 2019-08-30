@@ -13,7 +13,8 @@ class ControllerTest extends TestCase {
     $this->session = array('spoor_session_authenticity_token' => 1000123);
     $this->session_manager = new SessionManager($this->session);
     $this->whmcs_config = [
-      'modulelink' => 'admin/addonmodules.php?module=spoor'
+      'modulelink' => 'admin/addonmodules.php?module=spoor',
+      'spoor_localisation' => 'en-za'
     ];
     $this->params = [
     ];

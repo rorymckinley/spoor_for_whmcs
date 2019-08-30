@@ -181,7 +181,7 @@ describe('actions', () => {
       );
     });
 
-    it.only('updates the panes', async () => {
+    it('updates the panes', async () => {
       expect.assertions(3);
 
       context.getters.panes = [

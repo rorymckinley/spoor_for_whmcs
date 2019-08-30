@@ -46,7 +46,13 @@ function spoor_config() {
         'Size' => '64',
         'Default' => hash('sha256', random_int(1, 100000000)),
         'Description' => 'Used to generate anti-CSRF authenticity tokens'
-      ]
+      ],
+      'spoor_localisation' => [
+        'Spoor Localisation' => 'spoor_localisation',
+        'Type' => 'dropdown',
+        'Options' => ['default' => 'default', 'en-us' => 'en-us', 'en-gb' => 'en-gb', 'en-za' => 'en-za'],
+        'Description' => 'Primarily Used for Date Localisation',
+      ],
     ]
   ];
 }

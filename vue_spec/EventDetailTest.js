@@ -1,8 +1,11 @@
+window.spoorLocalisation = 'en-us';
+
 import {shallowMount} from '@vue/test-utils';
 import EventDetail from '../vue_src/EventDetail.vue';
 
 describe('EventDetail', () => {
   let eventData;
+
   beforeEach(() => {
     eventData = {
       id: '123ABC',
@@ -49,7 +52,9 @@ describe('EventDetail', () => {
     expect(wrapper.find('td[event-detail-item="mailbox_address"]').text()).toBe('hapless@victim.co.za');
     expect(wrapper.find('td[event-detail-item="ip_country_code"]').text()).toBe('ZA');
     expect(wrapper.find('td[event-detail-item="host"]').text()).toBe('host1.test.com');
-    expect(wrapper.find('td[event-detail-item="forward_recipient"]').text()).toBe('youshouldnotseethisforlogin@test.com');
+    expect(wrapper.find('td[event-detail-item="forward_recipient"]').text()).toBe(
+      'youshouldnotseethisforlogin@test.com'
+    );
     expect(wrapper.find('td[event-detail-item="ip_isp"]').text()).toBe('Foo ISP');
     expect(wrapper.find('td[event-detail-item="ip_organisation"]').text()).toBe('Bar Corp');
   });
