@@ -7,9 +7,9 @@ export default {
       ) {
         return [];
       } else {
-        return state.events.filter((event) => {
-          return state.associatedEventIds[selectedMailboxEventId].byForwardRecipient.includes(event.id);
-        });
+        return state.associatedEventIds[selectedMailboxEventId].byForwardRecipient.map(
+          (associatedEventId) => state.events.find((event) => event.id === associatedEventId)
+        );
       }
     };
   },
@@ -21,9 +21,9 @@ export default {
       ) {
         return [];
       } else {
-        return state.events.filter((event) => {
-          return state.associatedEventIds[selectedMailboxEventId].byIpAddress.includes(event.id);
-        });
+        return state.associatedEventIds[selectedMailboxEventId].byIpAddress.map(
+          (associatedEventId) => state.events.find((event) => event.id === associatedEventId)
+        );
       }
     };
   },
@@ -35,9 +35,9 @@ export default {
       ) {
         return [];
       } else {
-        return state.events.filter((event) => {
-          return state.associatedEventIds[selectedMailboxEventId].byMailboxAddress.includes(event.id);
-        });
+        return state.associatedEventIds[selectedMailboxEventId].byMailboxAddress.map(
+          (associatedEventId) => state.events.find((event) => event.id === associatedEventId)
+        );
       }
     };
   },
@@ -45,10 +45,11 @@ export default {
     return state.panes;
   },
   paneViewEvents(state) {
-    return (paneViewKey) => state.events.filter((event) => state.paneViews[paneViewKey].includes(event.id));
-  },
-  probablyMaliciousEvents(state) {
-    return state.events.filter((event) => state.probablyMaliciousEventIds.includes(event.id));
+    return (paneViewKey) => {
+      return state.paneViews[paneViewKey].map(
+        (paneEventId) => state.events.find((event) => event.id === paneEventId)
+      );
+    };
   },
   selectedEventId(state) {
     return (paneId) => {

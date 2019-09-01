@@ -47,9 +47,6 @@ export default {
   updatePaneView(state, payload) {
     Vue.set(state.paneViews, payload.viewKey, payload.events.map((event) => event.id));
   },
-  updateProbablyMaliciousEventIds(state, payload) {
-    state.probablyMaliciousEventIds = payload.events.map((event) => event.id);
-  },
   setSelectedEventId(state, payload) {
     const pane = (state.panes.filter((pane) => pane.id === payload.paneId))[0];
     Vue.set(pane, 'selectedEventId', payload.selectedEventId);
