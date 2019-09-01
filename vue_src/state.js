@@ -1,6 +1,5 @@
 export default {
   events: [],
-  probablyMaliciousEventIds: [],
   associatedEventIds: {
   },
   panes: [

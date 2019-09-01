@@ -51,16 +51,6 @@ describe('mutations', () => {
       {id: '1G', latest_assessment: 'confirmed_benign'},
     ]);
   });
-  it('updates the collection of event ids that are probably malicious', () => {
-    mutations.updateProbablyMaliciousEventIds(state, {
-      events: [
-        {id: '1C', latest_assessment: 'confirmed_benign', foo: 'bar-baz'},
-        {id: '1F', latest_assessment: 'probably_benign'},
-        {id: '1G', latest_assessment: 'confirmed_benign'},
-      ],
-    });
-    expect(state.probablyMaliciousEventIds).toEqual(['1C', '1F', '1G']);
-  });
   it('sets which event is selected', () => {
     mutations.setSelectedEventId(state, {paneId: 'foo', selectedEventId: '1A'});
     expect(state.panes[0].selectedEventId).toBe('1A');

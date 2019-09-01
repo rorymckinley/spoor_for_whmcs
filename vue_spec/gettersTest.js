@@ -1,7 +1,7 @@
 import getters from '../vue_src/getters';
 
 describe('getters', () => {
-  it('returns events that are referenced by the IDs in the specified view pane', () => {
+  it('returns events that are referenced by the IDs in the specified view pane in the order specified', () => {
     const state = {
       events: [
         {id: '1A', latest_assessment: 'probably_malicious'},
@@ -11,34 +11,16 @@ describe('getters', () => {
         {id: '1E', latest_assessment: 'probably_malicious'},
       ],
       paneViews: {
-        specifiedEventIds: ['1A', '1D', '1E'],
+        specifiedEventIds: ['1E', '1D', '1A'],
         otherEventIds: ['1B', '1C'],
       },
     };
 
     const events = getters.paneViewEvents(state)('specifiedEventIds');
     expect(events).toStrictEqual([
-      {id: '1A', latest_assessment: 'probably_malicious'},
-      {id: '1D', latest_assessment: 'probably_malicious'},
       {id: '1E', latest_assessment: 'probably_malicious'},
-    ]);
-  });
-  it('returns events that are in the list of probably malicious events', () => {
-    const state = {
-      events: [
-        {id: '1A', latest_assessment: 'probably_malicious'},
-        {id: '1B', latest_assessment: 'probably_benign'},
-        {id: '1C', latest_assessment: 'probably_benign'},
-        {id: '1D', latest_assessment: 'probably_malicious'},
-        {id: '1E', latest_assessment: 'probably_malicious'},
-      ],
-      probablyMaliciousEventIds: ['1A', '1D'],
-    };
-
-    const events = getters.probablyMaliciousEvents(state);
-    expect(events).toStrictEqual([
-      {id: '1A', latest_assessment: 'probably_malicious'},
       {id: '1D', latest_assessment: 'probably_malicious'},
+      {id: '1A', latest_assessment: 'probably_malicious'},
     ]);
   });
   it('returns the id of the selected event', () => {
@@ -99,7 +81,7 @@ describe('getters', () => {
       ],
       associatedEventIds: {
         '1C': {
-          byMailboxAddress: ['1A', '1B'],
+          byMailboxAddress: ['1B', '1A'],
           byIpAddress: ['1D', '1E'],
           byForwardRecipient: ['1F', '1G'],
         },
@@ -111,10 +93,10 @@ describe('getters', () => {
       },
     };
 
-    it('returns the events that are associated by mailbox address to the currently selected event', () => {
+    it('returns events associated by mailbox address with the specified event in the order specified', () => {
       expect(getters.eventsAssociatedByMailbox(state)('1C')).toStrictEqual([
-        {id: '1A', latest_assessment: 'probably_malicious'},
         {id: '1B', latest_assessment: 'probably_benign'},
+        {id: '1A', latest_assessment: 'probably_malicious'},
       ]);
     });
     it('returns an empty array if the associated event ids structure is not properly set up', () => {
@@ -141,7 +123,7 @@ describe('getters', () => {
       associatedEventIds: {
         '1C': {
           byMailboxAddress: ['1A', '1B'],
-          byIpAddress: ['1D', '1E'],
+          byIpAddress: ['1E', '1D'],
           byForwardRecipient: ['1F', '1G'],
         },
         '1D': {
@@ -152,10 +134,10 @@ describe('getters', () => {
       },
     };
 
-    it('returns the events that are associated by ip address to the currently selected event', () => {
+    it('returns events associated by ip address with the specified event in the order specified', () => {
       expect(getters.eventsAssociatedByIpAddress(state)('1C')).toStrictEqual([
-        {id: '1D', latest_assessment: 'probably_malicious'},
         {id: '1E', latest_assessment: 'probably_malicious'},
+        {id: '1D', latest_assessment: 'probably_malicious'},
       ]);
     });
     it('returns an empty array if the associated event ids structure is not propperly set up', () => {
@@ -183,7 +165,7 @@ describe('getters', () => {
         '1C': {
           byMailboxAddress: ['1A', '1B'],
           byIpAddress: ['1D', '1E'],
-          byForwardRecipient: ['1F', '1G'],
+          byForwardRecipient: ['1G', '1F'],
         },
         '1D': {
           byMailboxAddress: ['1G', '1H'],
@@ -193,10 +175,10 @@ describe('getters', () => {
       },
     };
 
-    it('returns the events that are associated by forward recipient to the currently selected event', () => {
+    it('returns events associated by forward recipient with the specified event in the order specified', () => {
       expect(getters.eventsAssociatedByForwardRecipient(state)('1C')).toStrictEqual([
-        {id: '1F', latest_assessment: 'confirmed_malicious'},
         {id: '1G', latest_assessment: 'confirmed_malicious'},
+        {id: '1F', latest_assessment: 'confirmed_malicious'},
       ]);
     });
     it('returns an empty array if the associated event ids structure is not propperly set up', () => {
