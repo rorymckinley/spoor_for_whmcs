@@ -15,8 +15,12 @@ describe('mutations', () => {
         {id: '1E', latest_assessment: 'probably_malicious'},
       ],
       paneViews: {
-        fooEventIds: ['1A', '1D'],
-        barEventIds: ['1D', '1E'],
+        fooEvents: {
+          ids: ['1A', '1D'],
+        },
+        barEvents: {
+          ids: ['1D', '1E'],
+        },
       },
       panes: [
         {id: 'foo', selectedEventId: null},
@@ -154,8 +158,8 @@ describe('mutations', () => {
         {id: '1F', latest_assessment: 'probably_benign'},
         {id: '1G', latest_assessment: 'confirmed_benign'},
       ],
-      viewKey: 'fooEventIds',
+      viewKey: 'fooEvents',
     });
-    expect(state.paneViews.fooEventIds).toStrictEqual(['1C', '1F', '1G']);
+    expect(state.paneViews.fooEvents.ids).toStrictEqual(['1C', '1F', '1G']);
   });
 });
