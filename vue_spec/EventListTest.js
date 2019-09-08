@@ -33,7 +33,9 @@ describe('Event list component', () => {
               {id: '1E', latest_assessment: 'probably_malicious'},
             ],
             paneViews: {
-              relevantEventIds: ['1A', '1D', '1E'],
+              relevantEvents: {
+                ids: ['1A', '1D', '1E'],
+              },
             },
           },
         },
@@ -47,7 +49,7 @@ describe('Event list component', () => {
       propsData: {
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
-        viewKey: 'relevantEventIds',
+        viewKey: 'relevantEvents',
       },
       store,
       localVue,
@@ -62,7 +64,7 @@ describe('Event list component', () => {
       propsData: {
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
-        viewKey: 'relevantEventIds',
+        viewKey: 'relevantEvents',
       },
       store,
       localVue,
@@ -97,7 +99,7 @@ describe('Event list component', () => {
       propsData: {
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
-        viewKey: 'relevantEventIds',
+        viewKey: 'relevantEvents',
       },
       store,
       localVue,
@@ -113,7 +115,7 @@ describe('Event list component', () => {
       propsData: {
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
-        viewKey: 'relevantEventIds',
+        viewKey: 'relevantEvents',
       },
       store,
       localVue,

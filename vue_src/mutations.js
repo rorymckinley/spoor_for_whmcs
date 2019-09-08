@@ -45,7 +45,7 @@ export default {
     }
   },
   updatePaneView(state, payload) {
-    Vue.set(state.paneViews, payload.viewKey, payload.events.map((event) => event.id));
+    Vue.set(state.paneViews[payload.viewKey], 'ids', payload.events.map((event) => event.id));
   },
   setSelectedEventId(state, payload) {
     const pane = (state.panes.filter((pane) => pane.id === payload.paneId))[0];

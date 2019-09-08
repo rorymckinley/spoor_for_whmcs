@@ -11,7 +11,9 @@ describe('getters', () => {
         {id: '1E', latest_assessment: 'probably_malicious'},
       ],
       paneViews: {
-        specifiedEventIds: ['1E', '1D', '1A'],
+        specifiedEventIds: {
+          ids: ['1E', '1D', '1A'],
+        },
         otherEventIds: ['1B', '1C'],
       },
     };

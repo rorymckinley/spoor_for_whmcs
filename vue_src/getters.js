@@ -46,7 +46,7 @@ export default {
   },
   paneViewEvents(state) {
     return (paneViewKey) => {
-      return state.paneViews[paneViewKey].map(
+      return state.paneViews[paneViewKey].ids.map(
         (paneEventId) => state.events.find((event) => event.id === paneEventId)
       );
     };

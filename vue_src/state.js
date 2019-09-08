@@ -7,20 +7,24 @@ export default {
       id: 'probably_malicious',
       title: 'Probably Malicious',
       seedAction: ['fetchProbablyMaliciousEvents', {}],
-      viewKey: 'probablyMaliciousEventIds',
+      viewKey: 'probablyMaliciousEvents',
       selectedEventId: null,
     },
     {
       id: 'confirmed_malicious',
       title: 'Confirmed Malicious',
       seedAction: ['fetchConfirmedMaliciousEvents', {}],
-      viewKey: 'confirmedMaliciousEventIds',
+      viewKey: 'confirmedMaliciousEvents',
       selectedEventId: null,
     },
   ],
   paneViews: {
-    probablyMaliciousEventIds: [],
-    confirmedMaliciousEventIds: [],
+    probablyMaliciousEvents: {
+      ids: [],
+    },
+    confirmedMaliciousEvents: {
+      ids: [],
+    },
   },
   selectedPaneId: 'probably_malicious',
 };
