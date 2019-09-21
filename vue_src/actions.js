@@ -6,7 +6,9 @@ export default {
       .get(`${requestPath}&ajax=true&action=fetch_probably_malicious_events`)
       .then((response) => {
         context.commit('updateEvents', {events: response.data.mailbox_events});
-        context.commit('updatePaneView', {events: response.data.mailbox_events, viewKey});
+        context.commit('updatePaneView', {
+          events: response.data.mailbox_events, metadata: response.data.metadata, viewKey,
+        });
       });
   },
   fetchConfirmedMaliciousEvents(context, {viewKey}) {
@@ -14,7 +16,9 @@ export default {
       .get(`${requestPath}&ajax=true&action=fetch_confirmed_malicious_events`)
       .then((response) => {
         context.commit('updateEvents', {events: response.data.mailbox_events});
-        context.commit('updatePaneView', {events: response.data.mailbox_events, viewKey});
+        context.commit('updatePaneView', {
+          events: response.data.mailbox_events, metadata: response.data.metadata, viewKey,
+        });
       });
   },
   fetchAssociatedMailboxEvents(context, mailboxEventId) {

@@ -152,14 +152,21 @@ describe('mutations', () => {
   });
 
   it('updates the selected paneView with the ids of the events provided', () => {
+    const metadata = {
+      offset: 10,
+      records: 20,
+      more_records: true,
+    };
     mutations.updatePaneView(state, {
       events: [
         {id: '1C', latest_assessment: 'confirmed_benign', foo: 'bar-baz'},
         {id: '1F', latest_assessment: 'probably_benign'},
         {id: '1G', latest_assessment: 'confirmed_benign'},
       ],
+      metadata,
       viewKey: 'fooEvents',
     });
     expect(state.paneViews.fooEvents.ids).toStrictEqual(['1C', '1F', '1G']);
+    expect(state.paneViews.fooEvents.metadata).toStrictEqual(metadata);
   });
 });

@@ -19,13 +19,13 @@ class SpoorApiClient {
   public function getProbablyMaliciousMailboxEvents() {
     $params = http_build_query(array('mailbox_events' => array('class' => 'probably_malicious')));
 
-    return $this->makeApiRequest($params);
+    return $this->makeApiRequestFullResponse($params);
   }
 
   public function getConfirmedMaliciousMailboxEvents() {
     $params = http_build_query(array('mailbox_events' => array('class' => 'confirmed_malicious')));
 
-    return $this->makeApiRequest($params);
+    return $this->makeApiRequestFullResponse($params);
   }
 
   public function getEventsAssociatedWithMailboxAddress($mailbox_event_id) {
@@ -125,5 +125,22 @@ class SpoorApiClient {
     curl_close($ch);
 
     return $mailbox_events;
+  }
+
+  private function makeApiRequestFullResponse($params) {
+    $ch = curl_init($this->api_url.'/api/mailbox_events?'.$params);
+
+    curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_setopt($ch, CURLOPT_USERPWD, $this->api_identifier.':'.$this->api_secret);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+    $response = json_decode(curl_exec($ch), true);
+
+    $info = curl_getinfo($ch);
+    curl_close($ch);
+
+    return $response;
   }
 }
