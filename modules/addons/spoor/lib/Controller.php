@@ -21,12 +21,12 @@ class Controller {
       $output = $this->view->htmlForMailboxEvents($events);
       break;
     case 'fetch_probably_malicious_events':
-      $events = $this->api_client->getProbablyMaliciousMailboxEvents();
-      $output = json_encode(['mailbox_events' => $events]);
+      $response = $this->api_client->getProbablyMaliciousMailboxEvents();
+      $output = json_encode($response);
       break;
     case 'fetch_confirmed_malicious_events':
-      $events = $this->api_client->getConfirmedMaliciousMailboxEvents();
-      $output = json_encode(['mailbox_events' => $events]);
+      $response = $this->api_client->getConfirmedMaliciousMailboxEvents();
+      $output = json_encode($response);
       break;
     case 'fetch_events_for_mailbox':
       $events = $this->api_client->getEventsAssociatedWithMailboxAddress($params['mailbox_event_id']);

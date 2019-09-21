@@ -13,6 +13,11 @@ const events = [
   {id: '1E', latest_assessment: 'probably_malicious'},
 ];
 
+const metadata = {
+  offset: 20,
+  records: 10,
+  more_records: true,
+};
 
 const context = {
   commit: jest.fn(),
@@ -27,6 +32,7 @@ describe('actions', () => {
   const response = {
     data: {
       mailbox_events: events,
+      metadata,
     },
   };
   beforeEach(() => {
@@ -51,7 +57,10 @@ describe('actions', () => {
       await flushPromises;
       expect(context.commit.mock.calls.length).toBe(2);
       expect(context.commit.mock.calls[0]).toEqual(['updateEvents', {events}]);
-      expect(context.commit.mock.calls[1]).toEqual(['updatePaneView', {events, viewKey: 'selectedPaneView'}]);
+      expect(context.commit.mock.calls[1]).toEqual([
+        'updatePaneView',
+        {events, metadata, viewKey: 'selectedPaneView'},
+      ]);
     });
   });
   describe('fetchConfirmedMaliciousEvents', () => {
@@ -68,7 +77,7 @@ describe('actions', () => {
       await flushPromises;
       expect(context.commit.mock.calls.length).toBe(2);
       expect(context.commit.mock.calls[0]).toEqual(['updateEvents', {events}]);
-      expect(context.commit.mock.calls[1]).toEqual(['updatePaneView', {events, viewKey: 'selectedPaneView'}]);
+      expect(context.commit.mock.calls[1]).toEqual(['updatePaneView', {events, metadata, viewKey: 'selectedPaneView'}]);
     });
   });
   describe('fetchAssociatedMailboxEvents', () => {

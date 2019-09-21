@@ -150,13 +150,16 @@ class ControllerTest extends TestCase {
         'type' => 'login'
       ),
     );
+    $metadata = [
+      'offset' => 10, 'records' => 20, 'more_records' => true
+    ];
     $this->api_client->method('getProbablyMaliciousMailboxEvents')
-               ->willReturn($events);
+               ->willReturn(['mailbox_events' => $events, 'metadata' => $metadata]);
 
     $action = 'fetch_probably_malicious_events';
 
     $output = $this->controller->route($action, $this->params, []);
-    $this->assertEquals(json_encode(['mailbox_events' => $events]), $output);
+    $this->assertEquals(json_encode(['mailbox_events' => $events, 'metadata' => $metadata]), $output);
   }
 
   public function testFetchConfirmedMaliciousMailboxEvents() {
@@ -179,13 +182,16 @@ class ControllerTest extends TestCase {
         'type' => 'login'
       ),
     );
+    $metadata = [
+      'offset' => 10, 'records' => 20, 'more_records' => true
+    ];
     $this->api_client->method('getConfirmedMaliciousMailboxEvents')
-               ->willReturn($events);
+               ->willReturn(['mailbox_events' => $events, 'metadata' => $metadata]);
 
     $action = 'fetch_confirmed_malicious_events';
 
     $output = $this->controller->route($action, $this->params, []);
-    $this->assertEquals(json_encode(['mailbox_events' => $events]), $output);
+    $this->assertEquals(json_encode(['mailbox_events' => $events, 'metadata' => $metadata]), $output);
   }
 
   public function testFetchEventsForMailbox() {

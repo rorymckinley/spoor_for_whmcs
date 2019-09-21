@@ -49,10 +49,10 @@ class SpoorApiClientTest extends TestCase {
     VCR::turnOn();
     VCR::insertCassette('spoorapiclient_getProbablyMaliciousMailboxEvents');
     $api_client = new SpoorApiClient($api_url, $api_identifier, $api_secret);
-    $events = $api_client->getProbablyMaliciousMailboxEvents();
+    $response = $api_client->getProbablyMaliciousMailboxEvents();
     VCR::eject();
     VCR::turnOff();
-    $this->assertCount(3, $events);
+    $this->assertCount(3, $response['mailbox_events']);
     $this->assertEquals(
       array(
         'id' => '312ZXC',
@@ -71,7 +71,16 @@ class SpoorApiClientTest extends TestCase {
         'event_time' => 1557205608,
         'type' => 'login'
       ),
-      $events[0]
+      $response['mailbox_events'][0]
+    );
+
+    $this->assertEquals(
+      array(
+        'offset' => 10,
+        'records' => 20,
+        'more_records' => true
+      ),
+      $response['metadata']
     );
   }
   public function testGetConfirmedMaliciousMailboxEvents() {
@@ -81,10 +90,10 @@ class SpoorApiClientTest extends TestCase {
     VCR::turnOn();
     VCR::insertCassette('spoorapiclient_getConfirmedMaliciousMailboxEvents');
     $api_client = new SpoorApiClient($api_url, $api_identifier, $api_secret);
-    $events = $api_client->getConfirmedMaliciousMailboxEvents();
+    $response = $api_client->getConfirmedMaliciousMailboxEvents();
     VCR::eject();
     VCR::turnOff();
-    $this->assertCount(3, $events);
+    $this->assertCount(3, $response['mailbox_events']);
     $this->assertEquals(
       array(
         'id' => '312ZXC',
@@ -103,7 +112,16 @@ class SpoorApiClientTest extends TestCase {
         'event_time' => 1557205608,
         'type' => 'login'
       ),
-      $events[0]
+      $response['mailbox_events'][0]
+    );
+
+    $this->assertEquals(
+      array(
+        'offset' => 10,
+        'records' => 20,
+        'more_records' => true
+      ),
+      $response['metadata']
     );
   }
 
