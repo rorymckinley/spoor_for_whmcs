@@ -21,11 +21,11 @@ class Controller {
       $output = $this->view->htmlForMailboxEvents($events);
       break;
     case 'fetch_probably_malicious_events':
-      $response = $this->api_client->getProbablyMaliciousMailboxEvents();
+      $response = $this->api_client->getProbablyMaliciousMailboxEvents($params['offset'], $params['records']);
       $output = json_encode($response);
       break;
     case 'fetch_confirmed_malicious_events':
-      $response = $this->api_client->getConfirmedMaliciousMailboxEvents();
+      $response = $this->api_client->getConfirmedMaliciousMailboxEvents($params['offset'], $params['records']);
       $output = json_encode($response);
       break;
     case 'fetch_events_for_mailbox':
@@ -58,7 +58,7 @@ class Controller {
       break;
     default:
       $this->initialiseSession();
-      $events = $this->api_client->getProbablyMaliciousMailboxEvents();
+      $events = $this->api_client->getProbablyMaliciousMailboxEvents($params['offset'], $params['records']);
       $output = $this->view->htmlForDashboard($events, $this->config, $this->session_manager->getAuthenticityToken());
       break;
     }

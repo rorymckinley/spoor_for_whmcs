@@ -32,11 +32,18 @@ describe('A pane component', () => {
               {id: '1D', latest_assessment: 'probably_malicious'},
               {id: '1E', latest_assessment: 'probably_malicious'},
             ],
+            paneViews: {
+              seedKey: {
+                ids: [],
+                metadata: {offset: 20, records: 10, more_records: false},
+              },
+            },
             probablyMaliciousEventIds: ['1A', '1D', '1E'],
             panes: [
               {id: 'foo', selectedEventId: null},
               {id: 'bar', selectedEventId: null},
             ],
+            recordsPerPage: 3,
           },
         },
       )
@@ -57,7 +64,9 @@ describe('A pane component', () => {
     });
 
     expect(store.dispatch).toHaveBeenCalledTimes(1);
-    expect(store.dispatch).toHaveBeenCalledWith(seedAction[0], {option: 'some value', viewKey});
+    expect(store.dispatch).toHaveBeenCalledWith(
+      seedAction[0], {option: 'some value', viewKey, records: store.state.recordsPerPage, offset: 0}
+    );
   });
 
   it('creates a event list instance', () => {
@@ -79,11 +88,13 @@ describe('A pane component', () => {
       title: 'Some crazy stuff',
       seedAction,
       viewKey,
+      id: `${paneId}_event_list`,
     });
   });
 
   describe('when a refresh is requested for the list of events', () => {
-    it('triggers a call to the backend', () => {
+    it('triggers a call to the backend with the current offset', () => {
+      store.state.paneViews.seedKey.metadata.offset = 99;
       const wrapper = shallowMount(Pane, {
         propsData: {
           title: 'Some crazy stuff',
@@ -98,7 +109,9 @@ describe('A pane component', () => {
 
       wrapper.find(EventList).vm.$emit('refresh-list');
       expect(store.dispatch).toHaveBeenCalledTimes(2);
-      expect(store.dispatch.mock.calls[1]).toEqual([seedAction[0], {option: 'some value', viewKey}]);
+      expect(store.dispatch.mock.calls[1]).toEqual(
+        [seedAction[0], {option: 'some value', viewKey, records: store.state.recordsPerPage, offset: 99}]
+      );
     });
   });
 
@@ -273,6 +286,49 @@ describe('A pane component', () => {
       expect(store.dispatch).toHaveBeenCalledTimes(2);
       expect(store.dispatch).toHaveBeenCalledWith(
         'updateMailboxEvent', {mailboxEventId: '1C', mailboxEvent: {assessment: 'foo_bar_baz'}}
+      );
+    });
+  });
+
+  describe('fetching events for other pages', () => {
+    it('fetches a page of newer events', () => {
+      const nextOffset = store.state.paneViews.seedKey.metadata.offset - store.state.recordsPerPage;
+      const wrapper = shallowMount(Pane, {
+        propsData: {
+          title: 'Some crazy stuff',
+          seedAction,
+          viewKey,
+          id: paneId,
+        },
+        store,
+        localVue,
+      });
+      expect(store.dispatch).toHaveBeenCalledTimes(1); // On mounting
+
+      wrapper.find(EventList).vm.$emit('fetch-newer-events-page');
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
+      expect(store.dispatch.mock.calls[1]).toEqual(
+        [seedAction[0], {option: 'some value', viewKey, records: store.state.recordsPerPage, offset: nextOffset}]
+      );
+    });
+    it('fetches a page of older events', () => {
+      const nextOffset = store.state.paneViews.seedKey.metadata.offset + store.state.recordsPerPage;
+      const wrapper = shallowMount(Pane, {
+        propsData: {
+          title: 'Some crazy stuff',
+          seedAction,
+          viewKey,
+          id: paneId,
+        },
+        store,
+        localVue,
+      });
+      expect(store.dispatch).toHaveBeenCalledTimes(1); // On mounting
+
+      wrapper.find(EventList).vm.$emit('fetch-older-events-page');
+      expect(store.dispatch).toHaveBeenCalledTimes(2);
+      expect(store.dispatch.mock.calls[1]).toEqual(
+        [seedAction[0], {option: 'some value', viewKey, records: store.state.recordsPerPage, offset: nextOffset}]
       );
     });
   });

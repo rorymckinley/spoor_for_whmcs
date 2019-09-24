@@ -210,4 +210,40 @@ describe('getters', () => {
       expect(getters.selectedPaneId(state)).toStrictEqual(state.selectedPaneId);
     });
   });
+  describe('paneViewMetaData', () => {
+    it('returns the metadata for the specified pane', () => {
+      const state = {
+        paneViews: {
+          specifiedEvents: {
+            ids: ['1E', '1D', '1A'],
+            metadata: {
+              offset: 10,
+              records: 20,
+              more_records: true,
+            },
+          },
+          otherEvents: {
+            ids: ['1B', '1C'],
+            metadata: {
+              offset: 20,
+              records: 10,
+              more_records: false,
+            },
+          },
+        },
+      };
+      expect(getters.paneViewMetadata(state)('specifiedEvents')).toStrictEqual({
+        offset: 10,
+        records: 20,
+        more_records: true,
+      });
+    });
+  });
+  describe('recordsPerPage', () => {
+    it('returns the number of records to be requested per page', () => {
+      const state = {recordsPerPage: 22};
+
+      expect(getters.recordsPerPage(state)).toStrictEqual(22);
+    });
+  });
 });

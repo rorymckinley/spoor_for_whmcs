@@ -51,6 +51,14 @@ export default {
       );
     };
   },
+  paneViewMetadata(state) {
+    return (paneViewKey) => {
+      return state.paneViews[paneViewKey].metadata;
+    };
+  },
+  recordsPerPage(state) {
+    return state.recordsPerPage;
+  },
   selectedEventId(state) {
     return (paneId) => {
       const pane = state.panes.filter((pane) => pane.id == paneId)[0];

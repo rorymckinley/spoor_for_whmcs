@@ -1,11 +1,14 @@
 <template>
   <div>
     <EventList
+      :id="eventListId"
       :title="title"
       :seed-action="seedAction"
       :view-key="viewKey"
       @refresh-list="refreshList"
       @mailbox-event-selected="setSelectedEventId"
+      @fetch-newer-events-page="fetchNewerEventsPage"
+      @fetch-older-events-page="fetchOlderEventsPage"
     />
     <EventDetail
       v-if="eventSelected"
@@ -49,6 +52,9 @@ export default {
     },
   },
   computed: {
+    eventListId() {
+      return `${this.id}_event_list`;
+    },
     selectedEventData() {
       return this.$store.getters.selectedEventData(this.id);
     },
@@ -67,16 +73,27 @@ export default {
       });
     },
     refreshList() {
-      this.seedData();
+      this.seedData(this.$store.getters.paneViewMetadata(this.viewKey).offset);
     },
-    seedData() {
+    seedData(offset = 0) {
       const [action, options] = this.seedAction;
-      this.$store.dispatch(action, Object.assign({}, options, {viewKey: this.viewKey}));
+      this.$store.dispatch(
+        action,
+        Object.assign({}, options, {records: this.$store.getters.recordsPerPage, viewKey: this.viewKey, offset})
+      );
     },
     setSelectedEventId(selectedEventId) {
       this.$store.commit('setSelectedEventId', {paneId: this.id, selectedEventId});
       this.$store.commit('initialiseAssociatedEventIds', {mailboxEventId: selectedEventId});
       this.$store.dispatch('fetchAssociatedMailboxEvents', selectedEventId);
+    },
+    fetchNewerEventsPage() {
+      const nextOffset = this.$store.getters.paneViewMetadata(this.viewKey).offset - this.$store.getters.recordsPerPage;
+      this.seedData(nextOffset);
+    },
+    fetchOlderEventsPage() {
+      const nextOffset = this.$store.getters.paneViewMetadata(this.viewKey).offset + this.$store.getters.recordsPerPage;
+      this.seedData(nextOffset);
     },
   },
 };

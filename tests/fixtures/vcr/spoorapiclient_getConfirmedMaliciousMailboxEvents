@@ -2,7 +2,7 @@
 -
     request:
         method: GET
-        url: 'https://spoor.capefox.co/api/mailbox_events?mailbox_events%5Bclass%5D=confirmed_malicious'
+        url: 'https://spoor.capefox.co/api/mailbox_events?mailbox_events%5Bclass%5D=confirmed_malicious&offset=20&records=10'
         headers:
             Host: spoor.capefox.co
             Accept: application/json
@@ -29,4 +29,4 @@
             Strict-Transport-Security: 'max-age=31536000; includeSubDomains'
             Transfer-Encoding: chunked
             Via: '1.1 vegur'
-        body: '{"mailbox_events":[{"id":"312ZXC","host":"host4.test.com","mailbox_address":"innocent@bystander.zzz","ip_actor":{"id":"009WER","ip_address":"10.0.0.4","city":"Cape Town","country_code":"ZA","owner":{"isp":"Awesome SP (Pty) Ltd","organisation":"awesome-isp"}},"event_time":1557205608,"type":"login"},{"id":"567CTR","host":"host5.test.com","mailbox_address":"helpless@victim.zzz","ip_actor":{"id":"987KNB","ip_address":"10.0.0.5","city":"Cape Town","country_code":"ZA","owner":{"isp":"Not So Awesome ISP (Pty) Ltd","organisation":"not-so-awesome"}},"event_time":1557153060,"type":"login"},{"id":"321BCA","host":"host6.test.com","mailbox_address":"annoyed@yetanothervictim.zzz","ip_actor":{"id":"678PQR","ip_address":"10.0.0.6","city":"Cape Town","country_code":"ZA","owner":{"isp":"Meh ISP (Pty) Ltd","organisation":"meh-isp"}},"event_time":1556002283,"type":"forward_removed"}],"metadata":{"offset":10,"records":20,"more_records":true}}'
+        body: '{"mailbox_events":[{"id":"312ZXC","host":"host4.test.com","mailbox_address":"innocent@bystander.zzz","ip_actor":{"id":"009WER","ip_address":"10.0.0.4","city":"Cape Town","country_code":"ZA","owner":{"isp":"Awesome SP (Pty) Ltd","organisation":"awesome-isp"}},"event_time":1557205608,"type":"login"},{"id":"567CTR","host":"host5.test.com","mailbox_address":"helpless@victim.zzz","ip_actor":{"id":"987KNB","ip_address":"10.0.0.5","city":"Cape Town","country_code":"ZA","owner":{"isp":"Not So Awesome ISP (Pty) Ltd","organisation":"not-so-awesome"}},"event_time":1557153060,"type":"login"},{"id":"321BCA","host":"host6.test.com","mailbox_address":"annoyed@yetanothervictim.zzz","ip_actor":{"id":"678PQR","ip_address":"10.0.0.6","city":"Cape Town","country_code":"ZA","owner":{"isp":"Meh ISP (Pty) Ltd","organisation":"meh-isp"}},"event_time":1556002283,"type":"forward_removed"}],"metadata":{"offset":20,"records":10,"more_records":true}}'

@@ -21,10 +21,13 @@ export default {
   paneViews: {
     probablyMaliciousEvents: {
       ids: [],
+      metadata: {},
     },
     confirmedMaliciousEvents: {
       ids: [],
+      metadata: {},
     },
   },
+  recordsPerPage: 5,
   selectedPaneId: 'probably_malicious',
 };

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 export default {
-  fetchProbablyMaliciousEvents(context, {viewKey}) {
+  fetchProbablyMaliciousEvents(context, {viewKey, records, offset}) {
     axios
-      .get(`${requestPath}&ajax=true&action=fetch_probably_malicious_events`)
+      .get(`${requestPath}&ajax=true&action=fetch_probably_malicious_events&offset=${offset}&records=${records}`)
       .then((response) => {
         context.commit('updateEvents', {events: response.data.mailbox_events});
         context.commit('updatePaneView', {
@@ -11,9 +11,9 @@ export default {
         });
       });
   },
-  fetchConfirmedMaliciousEvents(context, {viewKey}) {
+  fetchConfirmedMaliciousEvents(context, {viewKey, records, offset}) {
     axios
-      .get(`${requestPath}&ajax=true&action=fetch_confirmed_malicious_events`)
+      .get(`${requestPath}&ajax=true&action=fetch_confirmed_malicious_events&offset=${offset}&records=${records}`)
       .then((response) => {
         context.commit('updateEvents', {events: response.data.mailbox_events});
         context.commit('updatePaneView', {
@@ -61,9 +61,14 @@ export default {
       )
       .then((response) => {
         context.commit('updateEvents', {events: [response.data.mailbox_event]});
+        // TODO  It feels like this function is doing a bit too much here
         for (const pane of context.getters.panes) {
           const [action, options] = pane.seedAction;
-          context.dispatch(action, Object.assign({}, options, {viewKey: pane.viewKey}));
+          const offset = context.getters.paneViewMetadata(pane.viewKey).offset;
+          context.dispatch(
+            action,
+            Object.assign({}, options, {viewKey: pane.viewKey, records: context.getters.recordsPerPage, offset})
+          );
         }
       });
   },

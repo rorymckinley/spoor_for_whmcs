@@ -17,6 +17,7 @@ class ControllerTest extends TestCase {
       'spoor_localisation' => 'en-za'
     ];
     $this->params = [
+      'offset' => 10, 'records' => 5
     ];
     $this->controller = new Controller([
       'config' => $this->whmcs_config, 
@@ -47,6 +48,7 @@ class ControllerTest extends TestCase {
       ),
     );
     $this->api_client->method('getProbablyMaliciousMailboxEvents')
+               ->with(10, 5)
                ->willReturn($events);
 
     $action = null;
@@ -154,7 +156,8 @@ class ControllerTest extends TestCase {
       'offset' => 10, 'records' => 20, 'more_records' => true
     ];
     $this->api_client->method('getProbablyMaliciousMailboxEvents')
-               ->willReturn(['mailbox_events' => $events, 'metadata' => $metadata]);
+                ->with(10, 5)
+                ->willReturn(['mailbox_events' => $events, 'metadata' => $metadata]);
 
     $action = 'fetch_probably_malicious_events';
 
@@ -186,6 +189,7 @@ class ControllerTest extends TestCase {
       'offset' => 10, 'records' => 20, 'more_records' => true
     ];
     $this->api_client->method('getConfirmedMaliciousMailboxEvents')
+               ->with(10, 5)
                ->willReturn(['mailbox_events' => $events, 'metadata' => $metadata]);
 
     $action = 'fetch_confirmed_malicious_events';
