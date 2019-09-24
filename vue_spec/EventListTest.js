@@ -35,6 +35,7 @@ describe('Event list component', () => {
             paneViews: {
               relevantEvents: {
                 ids: ['1A', '1D', '1E'],
+                metadata: {offset: 10, records: 20, more_records: true},
               },
             },
           },
@@ -47,6 +48,7 @@ describe('Event list component', () => {
     store.dispatch = stubbedDispatch;
     const wrapper = shallowMount(EventList, {
       propsData: {
+        id: 'foo_bar_baz_event_list',
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
         viewKey: 'relevantEvents',
@@ -57,11 +59,108 @@ describe('Event list component', () => {
     expect(wrapper.find('div.panel-heading span').text()).toContain('Foo-Bar-Baz');
   });
 
+  it('uses the header to show data pertaining to the metadata', () => {
+    store.dispatch = stubbedDispatch;
+    const wrapper = shallowMount(EventList, {
+      propsData: {
+        id: 'foo_bar_baz_event_list',
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEvents',
+      },
+      store,
+      localVue,
+    });
+    expect(wrapper.find('div.panel-heading span').text()).toContain('Records 11 to 30');
+  });
+
+  it('creates page navigation controls', () => {
+    store.dispatch = stubbedDispatch;
+    const wrapper = shallowMount(EventList, {
+      propsData: {
+        id: 'foo_bar_baz_event_list',
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEvents',
+      },
+      store,
+      localVue,
+    });
+    expect(wrapper.findAll('nav[aria-label="foo_bar_baz_event_list pagination"]')).toHaveLength(1);
+    expect(wrapper.findAll('li#foo_bar_baz_event_list_older_page')).toHaveLength(1);
+    expect(wrapper.findAll('li#foo_bar_baz_event_list_newer_page')).toHaveLength(1);
+  });
+
+  it('does not show the newer page link on the first page', () => {
+    store.dispatch = stubbedDispatch;
+    store.state.paneViews.relevantEvents.metadata.offset = 0;
+    const wrapper = shallowMount(EventList, {
+      propsData: {
+        id: 'foo_bar_baz_event_list',
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEvents',
+      },
+      store,
+      localVue,
+    });
+    expect(wrapper.find('li#foo_bar_baz_event_list_newer_page').isVisible()).toBeFalsy();
+  });
+
+  it('does not show the older page link on the last page', () => {
+    store.dispatch = stubbedDispatch;
+    store.state.paneViews.relevantEvents.metadata.more_records = false;
+    const wrapper = shallowMount(EventList, {
+      propsData: {
+        id: 'foo_bar_baz_event_list',
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEvents',
+      },
+      store,
+      localVue,
+    });
+    expect(wrapper.find('li#foo_bar_baz_event_list_older_page').isVisible()).toBeFalsy();
+  });
+
+  it('can trigger an event to fetch a page of newer events', () => {
+    store.dispatch = stubbedDispatch;
+    const wrapper = shallowMount(EventList, {
+      propsData: {
+        id: 'foo_bar_baz_event_list',
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEvents',
+      },
+      store,
+      localVue,
+    });
+    wrapper.find('li#foo_bar_baz_event_list_newer_page').trigger('click');
+    expect(wrapper.emitted('fetch-newer-events-page')).toHaveLength(1);
+  });
+
+  it('can trigger an event to fetch a page of older events', () => {
+    store.dispatch = stubbedDispatch;
+    const wrapper = shallowMount(EventList, {
+      propsData: {
+        id: 'foo_bar_baz_event_list',
+        title: 'Foo-Bar-Baz',
+        seedAction: ['aFunctionToSeedTheList'],
+        viewKey: 'relevantEvents',
+      },
+      store,
+      localVue,
+    });
+    wrapper.find('li#foo_bar_baz_event_list_older_page').trigger('click');
+    expect(wrapper.emitted('fetch-older-events-page')).toHaveLength(1);
+  });
+
   it('generates a collection of events for each event id in the specified pane view', async () => {
     store.dispatch = stubbedDispatch;
     expect.assertions(5);
     const wrapper = shallowMount(EventList, {
       propsData: {
+        id: 'foo_bar_baz_event_list',
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
         viewKey: 'relevantEvents',
@@ -97,6 +196,7 @@ describe('Event list component', () => {
     store.dispatch = stubbedDispatch;
     const wrapper = shallowMount(EventList, {
       propsData: {
+        id: 'foo_bar_baz_event_list',
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
         viewKey: 'relevantEvents',
@@ -113,6 +213,7 @@ describe('Event list component', () => {
     store.dispatch = stubbedDispatch;
     const wrapper = shallowMount(EventList, {
       propsData: {
+        id: 'foo_bar_baz_event_list',
         title: 'Foo-Bar-Baz',
         seedAction: ['aFunctionToSeedTheList'],
         viewKey: 'relevantEvents',

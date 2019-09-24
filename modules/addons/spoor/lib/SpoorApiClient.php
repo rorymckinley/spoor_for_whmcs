@@ -16,14 +16,18 @@ class SpoorApiClient {
     return $this->makeApiRequest('');
   }
 
-  public function getProbablyMaliciousMailboxEvents() {
-    $params = http_build_query(array('mailbox_events' => array('class' => 'probably_malicious')));
+  public function getProbablyMaliciousMailboxEvents($offset, $records) {
+    $params = http_build_query(
+      array('mailbox_events' => array('class' => 'probably_malicious'), 'offset' => $offset, 'records' => $records)
+    );
 
     return $this->makeApiRequestFullResponse($params);
   }
 
-  public function getConfirmedMaliciousMailboxEvents() {
-    $params = http_build_query(array('mailbox_events' => array('class' => 'confirmed_malicious')));
+  public function getConfirmedMaliciousMailboxEvents($offset, $records) {
+    $params = http_build_query(
+      array('mailbox_events' => array('class' => 'confirmed_malicious'), 'offset' => $offset, 'records' => $records)
+    );
 
     return $this->makeApiRequestFullResponse($params);
   }

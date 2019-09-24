@@ -48,8 +48,10 @@ describe('actions', () => {
       axios.get = jest.fn(() => Promise.resolve(response));
     });
     it('fetches the list of events from the backend', () => {
-      actions.fetchProbablyMaliciousEvents(context, {viewKey: 'selectedPaneView'});
-      expect(axios.get).toHaveBeenCalledWith(`${window.requestPath}&ajax=true&action=fetch_probably_malicious_events`);
+      actions.fetchProbablyMaliciousEvents(context, {viewKey: 'selectedPaneView', records: 5, offset: 10});
+      expect(axios.get).toHaveBeenCalledWith(
+        `${window.requestPath}&ajax=true&action=fetch_probably_malicious_events&offset=10&records=5`
+      );
     });
     it('mutates the collection of events as well as the specified paneView', async () => {
       expect.assertions(3);
@@ -68,8 +70,10 @@ describe('actions', () => {
       axios.get = jest.fn(() => Promise.resolve(response));
     });
     it('fetches the list of events from the backend', () => {
-      actions.fetchConfirmedMaliciousEvents(context, {viewKey: 'selectedPaneView'});
-      expect(axios.get).toHaveBeenCalledWith(`${window.requestPath}&ajax=true&action=fetch_confirmed_malicious_events`);
+      actions.fetchConfirmedMaliciousEvents(context, {viewKey: 'selectedPaneView', records: 5, offset: 10});
+      expect(axios.get).toHaveBeenCalledWith(
+        `${window.requestPath}&ajax=true&action=fetch_confirmed_malicious_events&offset=10&records=5`
+      );
     });
     it('mutates the collection of events as well as the specified paneView', async () => {
       expect.assertions(3);
@@ -198,6 +202,19 @@ describe('actions', () => {
         {seedAction: ['bar', {b: 'ar'}], viewKey: 'barKey'},
       ];
 
+      context.getters.recordsPerPage = 19;
+
+      const paneViews = {
+        fooKey: {
+          metadata: {offset: 100},
+        },
+        barKey: {
+          metadata: {offset: 200},
+        },
+      };
+
+      context.getters.paneViewMetadata = (viewKey) => paneViews[viewKey].metadata;
+
       actions.updateMailboxEvent(context, {
         mailboxEventId: '1C', mailboxEvent: {assessment: 'foo_bar_baz'},
       });
@@ -205,8 +222,8 @@ describe('actions', () => {
       await flushPromises;
 
       expect(context.dispatch).toHaveBeenCalledTimes(2);
-      expect(context.dispatch).toHaveBeenCalledWith('foo', {f: 'oo', viewKey: 'fooKey'});
-      expect(context.dispatch).toHaveBeenCalledWith('bar', {b: 'ar', viewKey: 'barKey'});
+      expect(context.dispatch).toHaveBeenCalledWith('foo', {f: 'oo', viewKey: 'fooKey', records: 19, offset: 100});
+      expect(context.dispatch).toHaveBeenCalledWith('bar', {b: 'ar', viewKey: 'barKey', records: 19, offset: 200});
     });
   });
 });
