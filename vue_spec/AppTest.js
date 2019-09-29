@@ -1,6 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import App from '../vue_src/App.vue';
 import Pane from '../vue_src/Pane.vue';
+import FilterPane from '../vue_src/FilterPane.vue';
 import PaneNavigation from '../vue_src/PaneNavigation.vue';
 import Vuex from 'vuex';
 import storeConfig from '../vue_src/store-config.js';
@@ -83,6 +84,17 @@ describe('And in the darkness bind them', () => {
     const panes = wrapper.findAll(Pane);
     expect(panes.at(0).isVisible()).toBeFalsy();
     expect(panes.at(1).isVisible()).toBeTruthy();
+  });
+
+  it('creates a SearchPane instance', () => {
+    const wrapper = shallowMount(App, {
+      store,
+      localVue,
+    });
+
+    const panes = wrapper.findAll(FilterPane);
+    expect(panes).toHaveLength(1);
+    expect(panes.at(0).isVisible()).toBeFalsy();
   });
 
   it('creates a PaneNavigation element', () => {

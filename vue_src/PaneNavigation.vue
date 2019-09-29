@@ -12,6 +12,13 @@
           {{ pane.title }}
         </a>
       </li>
+      <li
+        role="presentation"
+        :class="selectedPane('filter') ? 'active' : ''"
+        @click="selectPane('filter')"
+      >
+        <a>Filter</a>
+      </li>
     </ul>
   </nav>
 </template>

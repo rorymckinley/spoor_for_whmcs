@@ -114,6 +114,9 @@ class SpoorApiClient {
     return $mailbox_event;
   }
 
+  public function searchForMailboxEvents($params) {
+  }
+
   private function makeApiRequest($params) {
     $ch = curl_init($this->api_url.'/api/mailbox_events?'.$params);
 

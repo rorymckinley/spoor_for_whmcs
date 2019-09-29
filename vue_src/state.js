@@ -27,6 +27,8 @@ export default {
       ids: [],
       metadata: {},
     },
+    filterResultEvents: {
+    },
   },
   recordsPerPage: 5,
   selectedPaneId: 'probably_malicious',

@@ -56,6 +56,10 @@ class Controller {
       $event = $this->api_client->getMailboxEvent($params['mailbox_event_id']);
       $output = json_encode(['mailbox_event' => $event]);
       break;
+    case 'search_for_mailbox_events':
+      $response = $this->api_client->searchForMailboxEvents($params['search'], $params['offset'], $params['records']);
+      $output = json_encode($response);
+      break;
     default:
       $this->initialiseSession();
       $events = $this->api_client->getProbablyMaliciousMailboxEvents($params['offset'], $params['records']);

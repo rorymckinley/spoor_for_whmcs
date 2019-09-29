@@ -440,4 +440,44 @@ class ControllerTest extends TestCase {
     $output = $this->controller->route($action, $this->params, []);
     $this->assertEquals(json_encode(['mailbox_event' => $event]), $output);
   }
+
+  public function testSearchForMailboxEvents() {
+    $search_params = [
+      'search' => ['foo' => 'bar', 'baz' => 'bazzicle'],
+      'offset' => 20,
+      'records' => 10
+    ];
+
+    $events = array(
+      array(
+        'id' => '123ABC',
+        'host' => 'host1.test.com',
+        'mailbox_address' => 'unwitting@victim.zzz',
+        'ip_actor' => array(
+          'id' => '789GHI',
+          'ip_address' => '10.0.0.1',
+          'city' => 'Cape Town',
+          'country_code' => 'ZA',
+          'owner' => array(
+            'isp' => 'Awesome SP (Pty) Ltd',
+            'organisation' => 'awesome'
+          )
+        ),
+        'event_time' => 1557205608,
+        'type' => 'login'
+      ),
+    );
+    $metadata = [
+      'offset' => 20, 'records' => 10, 'more_records' => true
+    ];
+
+    $this->api_client->method('searchForMailboxEvents')
+               ->with($search_params['search'], $search_params['offset'], $search_params['records'])
+               ->willReturn(['mailbox_events' => $events, 'metadata' => $metadata]);
+
+    $action = 'search_for_mailbox_events';
+
+    $output = $this->controller->route($action, $search_params, []);
+    $this->assertEquals(json_encode(['mailbox_events' => $events, 'metadata' => $metadata]), $output);
+  }
 }

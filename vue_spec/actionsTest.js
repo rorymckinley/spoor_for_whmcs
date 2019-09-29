@@ -226,4 +226,56 @@ describe('actions', () => {
       expect(context.dispatch).toHaveBeenCalledWith('bar', {b: 'ar', viewKey: 'barKey', records: 19, offset: 200});
     });
   });
+  describe('searchForEvents', () => {
+    const response = {
+      data: {
+        mailbox_events: events,
+        metadata,
+      },
+    };
+    beforeEach(() => {
+      axios.get = jest.fn(() => Promise.resolve(response));
+    });
+
+    it('fetches events matching the search criteria', () => {
+      actions.filterEvents(
+        context, {filter: {foo: 'bar', baz: 'bazzable'}, offset: 20, records: 10, viewKey: 'fooKey'}
+      );
+      const filterParams = '&filter[foo]=bar&filter[baz]=bazzable';
+      const params = `&ajax=true&action=filter_mailbox_events${filterParams}&offset=20&records=10`;
+
+      expect(axios.get).toHaveBeenCalledTimes(1);
+      expect(axios.get).toHaveBeenCalledWith(
+        `${window.requestPath}${params}`
+      );
+    });
+
+    it('updates the collection of events', async () => {
+      expect.assertions(2);
+
+      context.commit = jest.fn();
+      actions.filterEvents(
+        context, {filter: {foo: 'bar', baz: 'bazzable'}, offset: 20, records: 10, viewKey: 'fooKey'}
+      );
+
+      await flushPromises();
+
+      expect(context.commit).toHaveBeenCalledTimes(2);
+      expect(context.commit).toHaveBeenCalledWith('updateEvents', {events});
+    });
+
+    it('updates the events for the pane', async () => {
+      expect.assertions(2);
+
+      context.commit = jest.fn();
+      actions.filterEvents(
+        context, {filter: {foo: 'bar', baz: 'bazzable'}, offset: 20, records: 10, viewKey: 'fooKey'}
+      );
+
+      await flushPromises();
+
+      expect(context.commit).toHaveBeenCalledTimes(2);
+      expect(context.commit).toHaveBeenCalledWith('updatePaneView', {events, metadata, viewKey: 'fooKey'});
+    });
+  });
 });

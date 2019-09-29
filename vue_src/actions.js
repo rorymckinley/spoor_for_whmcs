@@ -72,4 +72,20 @@ export default {
         }
       });
   },
+  filterEvents(context, {filter, offset, records, viewKey}) {
+    const basePath = `${requestPath}&ajax=true&action=filter_mailbox_events`;
+    const pagination = `&offset=${offset}&records=${records}`;
+    const paramBuilder = (accumulator, [key, value]) => accumulator + `&filter[${key}]=${value}`;
+
+    const filterParams = Object.entries(filter).reduce(paramBuilder, '');
+
+    axios
+      .get(`${basePath}${filterParams}${pagination}`)
+      .then((response) => {
+        context.commit('updateEvents', {events: response.data.mailbox_events});
+        context.commit(
+          'updatePaneView', {events: response.data.mailbox_events, metadata: response.data.metadata, viewKey}
+        );
+      });
+  },
 };

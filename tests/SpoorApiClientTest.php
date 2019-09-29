@@ -249,4 +249,7 @@ class SpoorApiClientTest extends TestCase {
     VCR::turnOff();
     $this->assertEquals('fd320d92-e4bb-4868-b457-7b01c90cd972', $event['id']);
   }
+
+  public function testSearchForMailboxEvents() {
+  }
 }

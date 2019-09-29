@@ -29,16 +29,17 @@ describe('PaneNavigation', () => {
     );
   });
 
-  it('creates a link for each pane', () => {
+  it('creates a link for each pane in the config plus the search pane', () => {
     const wrapper = shallowMount(PaneNavigation, {
       store,
       localVue,
     });
 
     const links = wrapper.findAll('ul li[role="presentation"]');
-    expect(links).toHaveLength(testState.panes.length);
+    expect(links).toHaveLength(testState.panes.length + 1);
     expect(links.at(0).text()).toStrictEqual(testState.panes[0].title);
     expect(links.at(1).text()).toStrictEqual(testState.panes[1].title);
+    expect(links.at(2).text()).toStrictEqual('Filter');
   });
 
   it('makes the link for the selected pane active', () => {
@@ -50,6 +51,7 @@ describe('PaneNavigation', () => {
     const links = wrapper.findAll('ul li[role="presentation"]');
     expect(links.at(0).classes()).toStrictEqual([]);
     expect(links.at(1).classes()).toStrictEqual(['active']);
+    expect(links.at(2).classes()).toStrictEqual([]);
   });
 
   it('updates the selctedPaneId if a nav link is clicked', (done) => {

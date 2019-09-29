@@ -11,6 +11,10 @@
         :seed-action="pane.seedAction"
         :view-key="pane.viewKey"
       />
+      <FilterPane
+        v-show="selectedPane('search')"
+        id="search"
+      />
     </div>
   </div>
 </template>
@@ -18,10 +22,12 @@
 <script>
 import Pane from './Pane.vue';
 import PaneNavigation from './PaneNavigation.vue';
+import FilterPane from './FilterPane.vue';
 export default {
   components: {
     Pane,
     PaneNavigation,
+    FilterPane,
   },
   computed: {
     panes() {
