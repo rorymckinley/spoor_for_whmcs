@@ -1,5 +1,36 @@
 import axios from 'axios';
 
+/**
+ * Converts a params object into a string
+ *
+ * @param {string} paramRootName Root name for nested hash
+ * @param {object} elements Object containing keys and values for the params
+ *
+ * @return {string}
+ */
+function buildParams(paramRootName, elements) {
+  const paramEntries = Object.entries(elements);
+
+  return paramEntries.reduce((accumulator, [key, value]) => {
+    if (typeof(value) === 'object') {
+      accumulator += buildParams(`${paramRootName}[${key}]`, value);
+    } else {
+      accumulator += `&${paramRootName}[${key}]=${value}`;
+    }
+
+    return accumulator;
+  }, '');
+  // for (const [key, value] of paramEntries) {
+  //   if (value === null) {
+  //   } else if (typeof(value) === 'object') {
+  //     output += buildParams(`${paramRootName}[${key}]`, value);
+  //   } else {
+  //     output += `&${paramRootName}[${key}]=${value}`;
+  //   }
+  // }
+  // return output;
+};
+
 export default {
   fetchProbablyMaliciousEvents(context, {viewKey, records, offset}) {
     axios
@@ -75,9 +106,8 @@ export default {
   filterEvents(context, {filter, offset, records, viewKey}) {
     const basePath = `${requestPath}&ajax=true&action=filter_mailbox_events`;
     const pagination = `&offset=${offset}&records=${records}`;
-    const paramBuilder = (accumulator, [key, value]) => accumulator + `&filter[${key}]=${value}`;
 
-    const filterParams = Object.entries(filter).reduce(paramBuilder, '');
+    const filterParams = buildParams('mailbox_events', filter);
 
     axios
       .get(`${basePath}${filterParams}${pagination}`)

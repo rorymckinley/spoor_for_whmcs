@@ -48,10 +48,12 @@ describe('a FilterPane component', () => {
       store,
     });
 
-    wrapper.find(FilterBar).vm.$emit('filter-request', {filter: {start_time: 1567317600}, offset: 0});
+    wrapper.find(FilterBar).vm.$emit('filter-request', {event_time: {start: 1567317600}});
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(store.dispatch).toHaveBeenCalledWith(
-      'seedAction', {foo: 'bar', filter: {start_time: 1567317600}, offset: 0, records: store.getters.recordsPerPage},
+      'seedAction', {
+        foo: 'bar', filter: {event_time: {start: 1567317600}}, offset: 0, records: store.getters.recordsPerPage,
+      },
     );
   });
 });

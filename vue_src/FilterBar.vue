@@ -64,10 +64,9 @@ export default {
       const [year, month, day] = this.search.range.start.date.split('-').map((part) => parseInt(part));
       const [hour, minute] = this.search.range.start.time.split(':').map((part) => parseInt(part));
       this.$emit('filter-request', {
-        filter: {
-          start_time: ((new Date(year, month - 1, day, hour, minute, 0)).getTime() / 1000),
+        event_time: {
+          start: ((new Date(year, month - 1, day, hour, minute, 0)).getTime() / 1000),
         },
-        offset: 0,
       });
     },
   },

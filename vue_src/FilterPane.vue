@@ -22,7 +22,9 @@ export default {
   methods: {
     filterEvents(searchParams) {
       const [action, options] = this.seedAction;
-      this.$store.dispatch(action, Object.assign({records: this.$store.getters.recordsPerPage}, options, searchParams));
+      this.$store.dispatch(action, Object.assign(
+        {}, options, {filter: searchParams, records: this.$store.getters.recordsPerPage, offset: 0}
+      ));
     },
   },
 };

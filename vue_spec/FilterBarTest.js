@@ -37,7 +37,7 @@ describe('a SearchBar component', () => {
 
       expect(wrapper.emitted('filter-request')).toHaveLength(1);
       expect(wrapper.emitted('filter-request')[0]).toStrictEqual([
-        {filter: {start_time: selectedDate.getTime() / 1000}, offset: 0},
+        {event_time: {start: selectedDate.getTime() / 1000}},
       ]);
     });
   });

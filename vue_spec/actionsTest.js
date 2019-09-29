@@ -238,10 +238,10 @@ describe('actions', () => {
     });
 
     it('fetches events matching the search criteria', () => {
-      actions.filterEvents(
-        context, {filter: {foo: 'bar', baz: 'bazzable'}, offset: 20, records: 10, viewKey: 'fooKey'}
-      );
-      const filterParams = '&filter[foo]=bar&filter[baz]=bazzable';
+      actions.filterEvents(context, {
+        filter: {foo: 'bar', baz: {buzz: 'biz'}}, offset: 20, records: 10, viewKey: 'fooKey',
+      });
+      const filterParams = '&mailbox_events[foo]=bar&mailbox_events[baz][buzz]=biz';
       const params = `&ajax=true&action=filter_mailbox_events${filterParams}&offset=20&records=10`;
 
       expect(axios.get).toHaveBeenCalledTimes(1);
